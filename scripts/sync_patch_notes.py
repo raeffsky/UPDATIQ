@@ -60,6 +60,95 @@ def clean_text(node):
             seen.add(text)
     return "\n\n".join(lines)
 
+def find_structured_patch(value):
+    if isinstance(value, dict):
+        if isinstance(value.get("heroChanges"), list) and value["heroChanges"]:
+            return value
+        for child in value.values():
+            found = find_structured_patch(child)
+            if found:
+                return found
+    elif isinstance(value, list):
+        for child in value:
+            found = find_structured_patch(child)
+            if found:
+                return found
+    elif isinstance(value, str) and len(value) > 100:
+        try:
+            return find_structured_patch(json.loads(value))
+        except (ValueError, TypeError):
+            return None
+    return None
+
+def extract_structured_patch(soup):
+    for script in soup.select("script"):
+        raw = script.string or script.get_text()
+        if not raw or "heroName" not in raw:
+            continue
+        # MLBBHub embeds its full patch model in a Next.js Flight payload.
+        for match in re.finditer(r'"heroChanges"\\s*:', raw):
+            start = raw.rfind("{", 0, match.start())
+            if start < 0:
+                continue
+            depth = 0
+            quoted = escaped = False
+            for pos in range(start, len(raw)):
+                ch = raw[pos]
+                if quoted:
+                    if escaped: escaped = False
+                    elif ch == "\\\\": escaped = True
+                    elif ch == '"': quoted = False
+                else:
+                    if ch == '"': quoted = True
+                    elif ch == "{": depth += 1
+                    elif ch == "}":
+                        depth -= 1
+                        if depth == 0:
+                            candidate = raw[start:pos + 1]
+                            try:
+                                obj = json.loads(candidate)
+                                found = find_structured_patch(obj)
+                                if found:
+                                    return found
+                            except (ValueError, TypeError):
+                                pass
+                            break
+        # Also try script contents that are pure JSON.
+        try:
+            found = find_structured_patch(json.loads(raw))
+            if found:
+                return found
+        except (ValueError, TypeError):
+            pass
+    return None
+
+def render_structured_patch(patch):
+    sections = []
+    for hero in patch.get("heroChanges", []):
+        name = str(hero.get("heroName") or hero.get("name") or "Герой")
+        kind = str(hero.get("changeType") or "").upper()
+        lines = [f"{name} · {kind}" if kind else name]
+        summary = str(hero.get("summary") or "").strip()
+        if summary:
+            lines.append(summary)
+        for detail in hero.get("details", []):
+            label = " · ".join(str(detail.get(k) or "").strip() for k in ("skill", "attribute") if detail.get(k))
+            before, after = detail.get("from"), detail.get("to")
+            note = str(detail.get("note") or "").strip()
+            if before is not None or after is not None:
+                lines.append(f"{label}: {before if before is not None else '—'} → {after if after is not None else '—'}")
+            elif note:
+                lines.append(f"{label}: {note}" if label else note)
+        sections.append("\\n\\n".join(lines))
+    for group in patch.get("systemChanges", []):
+        if group.get("category"):
+            sections.append(str(group["category"]))
+        for item in group.get("items", []):
+            text = "\\n".join(str(item.get(k) or "").strip() for k in ("title", "description") if item.get(k))
+            if text:
+                sections.append(text)
+    return "\\n\\n".join(sections)
+
 def split_translation_chunks(text, limit=1800):
     """Split at paragraph boundaries, then split oversized paragraphs safely."""
     chunks = []
@@ -149,26 +238,30 @@ def main():
         if not candidates:
             print(f"Skipping {version}: no article body detected", file=sys.stderr)
             continue
-        # Prefer the page's actual change cards over its SEO summary and FAQ prose.
-        roots = article_soup.select("main, article, [class*='patch'], [class*='content']")
+        # Extract real stat changes from the structured model embedded by MLBBHub.
+        structured = extract_structured_patch(article_soup)
         card_lines = []
-        card_seen = set()
-        card_selector = (
-            "[class*='hero-card'], [class*='change-card'], [class*='patch-card'], "
-            "[class*='stat-card'], [class*='skill-card'], [class*='hero-change'], "
-            "[class*='balance-card'], [class*='change-item'], [class*='patch-item']"
-        )
-        for root in roots:
-            for card in root.select(card_selector):
-                # Skip nested matches; the outer card contains its complete stat changes.
-                if card.find_parent(class_=re.compile(r"(hero-card|change-card|patch-card|stat-card|skill-card|hero-change|balance-card|change-item|patch-item)")):
-                    continue
-                text = " ".join(card.get_text(" ", strip=True).split())
-                if len(text) >= 35 and text not in card_seen:
-                    card_lines.append(text)
-                    card_seen.add(text)
-        # If cards are detected, preserve each card as a separate paragraph, including old/new values.
-        body = "\n\n".join(card_lines) if card_lines else clean_text(candidates[0])
+        if structured:
+            body = render_structured_patch(structured)
+        else:
+            roots = article_soup.select("main, article, [class*='patch'], [class*='content']")
+            card_seen = set()
+            card_selector = (
+                "[class*='hero-card'], [class*='change-card'], [class*='patch-card'], "
+                "[class*='stat-card'], [class*='skill-card'], [class*='hero-change'], "
+                "[class*='balance-card'], [class*='change-item'], [class*='patch-item']"
+            )
+            for root in roots:
+                for card in root.select(card_selector):
+                    if card.find_parent(class_=re.compile(r"(hero-card|change-card|patch-card|stat-card|skill-card|hero-change|balance-card|change-item|patch-item)")):
+                        continue
+                    text = " ".join(card.get_text(" ", strip=True).split())
+                    if len(text) >= 35 and text not in card_seen:
+                        card_lines.append(text)
+                        card_seen.add(text)
+            body = "\\n\\n".join(card_lines) if card_lines else clean_text(candidates[0])
+        if structured and not re.search(r"\\b\\d+\\s*(?:→|->|to)\\s*\\d+", body):
+            raise RuntimeError(f"Structured patch data found for {version}, but numeric before/after changes were not rendered.")
         if len(body) < 700:
             print(f"Skipping {version}: article body too short ({len(body)} chars)", file=sys.stderr)
             continue
