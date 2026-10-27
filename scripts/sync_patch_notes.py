@@ -7,6 +7,7 @@ attached to every entry; never synthesize missing numeric values.
 import json
 import re
 import sys
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import urljoin
@@ -29,40 +30,64 @@ def clean_text(node):
             lines.append(text)
     return "\n\n".join(lines)
 
-def translate_to_russian(text, session):
-    """Translate complete article text in bounded chunks while preserving all figures."""
+def split_translation_chunks(text, limit=1800):
+    """Split at paragraph boundaries, then split oversized paragraphs safely."""
     chunks = []
     current = ""
-    # Split on paragraph boundaries so each request remains comfortably below URL limits.
-    for paragraph in text.split("\\n\\n"):
+    for paragraph in text.split("\n\n"):
         paragraph = paragraph.strip()
         if not paragraph:
             continue
-        if len(current) + len(paragraph) + 2 > 3000 and current:
-            chunks.append(current)
-            current = ""
-        current = (current + "\\n\\n" + paragraph).strip()
+        pieces = [paragraph[i:i + limit] for i in range(0, len(paragraph), limit)]
+        for piece in pieces:
+            if current and len(current) + len(piece) + 2 > limit:
+                chunks.append(current)
+                current = piece
+            else:
+                current = (current + "\n\n" + piece).strip()
     if current:
         chunks.append(current)
+    return chunks
 
-    translated = []
+def translate_to_russian(text, session):
+    """Translate the entire article with retry/backoff for Google Translate rate limits."""
     endpoint = "https://translate.googleapis.com/translate_a/single"
-    for chunk in chunks:
-        response = session.get(endpoint, params={
-            "client": "gtx", "sl": "en", "tl": "ru", "dt": "t", "q": chunk
-        }, timeout=45)
-        response.raise_for_status()
-        payload = response.json()
-        if not isinstance(payload, list) or not payload or not isinstance(payload[0], list):
-            raise RuntimeError("Translation service returned an unexpected response.")
-        translated_chunk = "".join(
-            part[0] for part in payload[0]
-            if isinstance(part, list) and part and isinstance(part[0], str)
-        )
-        if not translated_chunk.strip():
-            raise RuntimeError("Translation service returned an empty translation.")
-        translated.append(translated_chunk)
-    return "\\n\\n".join(translated)
+    translated = []
+    chunks = split_translation_chunks(text)
+    for index, chunk in enumerate(chunks):
+        last_error = None
+        for attempt in range(5):
+            try:
+                response = session.get(endpoint, params={
+                    "client": "gtx", "sl": "en", "tl": "ru", "dt": "t", "q": chunk
+                }, timeout=45)
+                if response.status_code == 429 or response.status_code >= 500:
+                    last_error = RuntimeError(f"Translation service HTTP {response.status_code}")
+                    time.sleep(min(8 * (attempt + 1), 40))
+                    continue
+                response.raise_for_status()
+                payload = response.json()
+                if not isinstance(payload, list) or not payload or not isinstance(payload[0], list):
+                    raise RuntimeError("Translation service returned an unexpected response.")
+                translated_chunk = "".join(
+                    part[0] for part in payload[0]
+                    if isinstance(part, list) and part and isinstance(part[0], str)
+                )
+                if not translated_chunk.strip():
+                    raise RuntimeError("Translation service returned an empty translation.")
+                translated.append(translated_chunk)
+                last_error = None
+                break
+            except (requests.RequestException, ValueError, RuntimeError) as exc:
+                last_error = exc
+                if attempt < 4:
+                    time.sleep(min(8 * (attempt + 1), 40))
+        if last_error:
+            raise last_error
+        # Avoid hammering a public translation endpoint across long articles.
+        if index < len(chunks) - 1:
+            time.sleep(1.5)
+    return "\n\n".join(translated)
 
 def main():
     session = requests.Session()
