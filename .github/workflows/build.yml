@@ -52,7 +52,7 @@ jobs:
             const heroIcon = path.join(dir, hero.icon_file || 'icon.png');
             if (fs.existsSync(heroIcon)) fs.copyFileSync(heroIcon, path.join(out, name + '.png'));
           }
-          fs.writeFileSync('app/src/main/assets/hero-skills.js', 'window.heroSkillData = ' + JSON.stringify(result) + ';\\n');
+          fs.writeFileSync('app/src/main/assets/hero-skills.js', 'window.heroSkillData = ' + JSON.stringify(result) + ';\n');
           console.log('Generated skill data for ' + Object.keys(result).length + ' heroes');
           NODE
       - name: Set up Java
