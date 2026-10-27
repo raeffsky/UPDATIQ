@@ -65,8 +65,18 @@ jobs:
           sed -i 's/UPDATIQ-U-transparent\.png/UPDATIQ-U-transparent.webp/g' app/src/main/assets/index.html
           rm app/src/main/assets/UPDATIQ-U-transparent.png
           rm -f app/src/main/assets/UPDATIQ-App-Icon.jpg
-      - name: Include collected official news in app assets
-        run: cp official-news.json app/src/main/assets/official-news.json
+      - name: Embed collected official news for offline WebView access
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          data = json.loads(Path("official-news.json").read_text(encoding="utf-8"))
+          Path("app/src/main/assets/official-news-data.js").write_text(
+              "window.UPDATIQ_OFFICIAL_NEWS = " + json.dumps(data, ensure_ascii=False, separators=(",", ":")) + ";\\n",
+              encoding="utf-8"
+          )
+          print("Embedded official articles:", len(data.get("articles", [])))
+          PY
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
