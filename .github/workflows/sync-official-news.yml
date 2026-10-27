@@ -31,10 +31,10 @@ jobs:
           page = Path("/tmp/moonton-news.html").read_text(encoding="utf-8", errors="replace")
           # Parse each list item independently; tolerate relative links and markup variations.
           unique = {}
-          blocks = re.findall(r"<li\\b[^>]*>(.*?)</li>", page, re.S | re.I)
+          blocks = re.findall(r"<li\b[^>]*>(.*?)</li>", page, re.S | re.I)
           print("List items found:", len(blocks))
           for block in blocks:
-              link = re.search(r"""href=["']([^"']*/news/\\d+\\.html(?:\\?[^"']*)?)["']""", block, re.I)
+              link = re.search(r"""href=["']([^"']*/news/\d+\.html(?:\?[^"']*)?)["']""", block, re.I)
               if not link:
                   continue
               url = link.group(1)
@@ -46,7 +46,7 @@ jobs:
                   url = "https://en.moonton.com/" + url.lstrip("/")
               url = url.split("?", 1)[0]
               def get_text(cls):
-                  m = re.search(r"""<div[^>]*class=["'][^"']*\\b""" + re.escape(cls) + r"""\\b[^"']*["'][^>]*>(.*?)</div>""", block, re.S | re.I)
+                  m = re.search(r"""<div[^>]*class=["'][^"']*\b""" + re.escape(cls) + r"""\b[^"']*["'][^>]*>(.*?)</div>""", block, re.S | re.I)
                   if not m:
                       return ""
                   value = re.sub(r"<[^>]+>", " ", m.group(1))
@@ -67,10 +67,10 @@ jobs:
           articles = sorted(unique.values(), key=lambda a:a.get("publishedAt",""), reverse=True)[:60]
           print("Article links with titles:", len(articles))
           if not articles:
-              print("HTML sample:", re.sub(r"\\s+", " ", page[:1000]))
+              print("HTML sample:", re.sub(r"\s+", " ", page[:1000]))
               raise SystemExit("No official news extracted; refusing to overwrite last known data.")
           out = {"source":{"name":"MOONTON Games","url":URL,"checkedAt":datetime.now(timezone.utc).isoformat(),"intervalMinutes":30},"articles":articles}
-          Path("official-news.json").write_text(json.dumps(out,ensure_ascii=False,indent=2)+"\\n",encoding="utf-8")
+          Path("official-news.json").write_text(json.dumps(out,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
           print("Collected",len(articles),"official articles")
           print("Articles with images:",sum(bool(a["image"]) for a in articles))
           PY
