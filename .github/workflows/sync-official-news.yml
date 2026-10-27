@@ -119,7 +119,7 @@ jobs:
                           if images: article["images"] = images
                           # Preserve source order: text blocks stay between their original images.
                           ordered = []
-                          token_re = re.compile(r"(?is)<(img|p|h[1-6]|li|blockquote|figure)\b[^>]*>.*?(?:</\1\s*>|$)|<img\b[^>]*>")
+                          token_re = re.compile(r"(?is)<img\b[^>]*>|<(p|h[1-6]|li|blockquote|figure)\b[^>]*>.*?</\1\s*>")
                           for token in token_re.finditer(body):
                               fragment = token.group(0)
                               tag = re.match(r"(?is)<(\w+)", fragment)
