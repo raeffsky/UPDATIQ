@@ -117,28 +117,55 @@ jobs:
                               elif src.startswith("/"): src = "https://en.moonton.com" + src
                               if src.startswith("https://") and src not in images: images.append(src)
                           if images: article["images"] = images
-                          # Preserve source order: text blocks stay between their original images.
+                          # Parse HTML events in source order so images remain between their text blocks.
+                          from html.parser import HTMLParser
+                          class OrderedArticleParser(HTMLParser):
+                              def __init__(self):
+                                  super().__init__(convert_charrefs=True)
+                                  self.items = []
+                                  self.active_tag = None
+                                  self.text_parts = []
+                              def flush_text(self):
+                                  txt = clean_html(" ".join(self.text_parts))
+                                  if txt:
+                                      self.items.append({"type":"text","text":txt})
+                                  self.text_parts = []
+                              def handle_starttag(self, tag, attrs):
+                                  attrs = dict(attrs)
+                                  if tag == "img":
+                                      self.flush_text()
+                                      src = attrs.get("src") or attrs.get("data-src") or attrs.get("_src")
+                                      if src:
+                                          if src.startswith("//"): src = "https:" + src
+                                          elif src.startswith("/"): src = "https://en.moonton.com" + src
+                                          if src.startswith("https://"):
+                                              self.items.append({"type":"image","src":src})
+                                  elif tag in ("p","h1","h2","h3","h4","h5","h6","li","blockquote"):
+                                      if self.active_tag is None:
+                                          self.active_tag = tag
+                                          self.text_parts = []
+                              def handle_data(self, data):
+                                  if self.active_tag is not None and data.strip():
+                                      self.text_parts.append(data.strip())
+                              def handle_endtag(self, tag):
+                                  if self.active_tag == tag:
+                                      self.flush_text()
+                                      self.active_tag = None
+                          parser = OrderedArticleParser()
+                          parser.feed(body)
+                          parser.flush_text()
                           ordered = []
-                          token_re = re.compile(r"(?is)<img\b[^>]*>|<(p|h[1-6]|li|blockquote|figure)\b[^>]*>.*?</\1\s*>")
-                          for token in token_re.finditer(body):
-                              fragment = token.group(0)
-                              tag = re.match(r"(?is)<(\w+)", fragment)
-                              if not tag: continue
-                              tag_name = tag.group(1).lower()
-                              if tag_name == "img":
-                                  im = re.search(r"""(?:src|data-src|_src)=["']([^"']+)["']""", fragment, re.I)
-                                  if im:
-                                      src = im.group(1)
-                                      if src.startswith("//"): src = "https:" + src
-                                      elif src.startswith("/"): src = "https://en.moonton.com" + src
-                                      if src.startswith("https://"): ordered.append({"type":"image","src":src})
+                          seen_images = set()
+                          for block in parser.items:
+                              if block["type"] == "image":
+                                  if block["src"] in seen_images: continue
+                                  seen_images.add(block["src"])
+                                  ordered.append(block)
                               else:
-                                  txt = clean_html(fragment)
-                                  if txt: ordered.append({"type":"text","text":txt})
-                          blocks_ru = []
-                          for block in ordered:
-                              blocks_ru.append({"type":"text","text":translate_ru(block["text"])} if block["type"] == "text" else block)
-                          if blocks_ru: article["contentBlocks"] = blocks_ru
+                                  translated = translate_ru(block["text"])
+                                  if translated and (not ordered or ordered[-1].get("text") != translated):
+                                      ordered.append({"type":"text","text":translated})
+                          if ordered: article["contentBlocks"] = ordered
                           print("Full article", article["id"], "characters", len(article["fullText"]), "images", len(article["images"]), "ordered blocks", len(blocks_ru))
                       else: print("Article body not found:", article["id"])
                   except Exception as exc: print("Article fetch failed:", article["id"], str(exc)[:120])
