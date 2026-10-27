@@ -101,7 +101,7 @@ function renderTiers(){
  rows.innerHTML=["S","A","B","C","D"].map(t=>{
    const heroes=lane.heroes.filter(h=>(tierMode==="stats"?(h._metricTier||h.tier):h.tier)===t);
    const content=heroes.map(h=>{
-     const image=h.image?'<img class="tier-portrait" src="'+h.image+'" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\'"><iconify-icon class="tier-fallback" style="display:none" icon="tabler:shield-question"></iconify-icon>':'<iconify-icon class="tier-fallback" icon="tabler:shield-question"></iconify-icon>';
+     const localImage=h.slug?("hero-images/"+h.slug+".webp"):"";const image=h.image?'<img class="tier-portrait" src="'+localImage+'" data-remote="'+h.image+'" alt="" loading="lazy" onerror="if(this.dataset.remote&&this.src!==this.dataset.remote){this.src=this.dataset.remote}else{this.style.display=\'none\';this.nextElementSibling.style.display=\'block\'}"><iconify-icon class="tier-fallback" style="display:none" icon="tabler:shield-question"></iconify-icon>':'<iconify-icon class="tier-fallback" icon="tabler:shield-question"></iconify-icon>';
      const stats='<small>WR '+(h.winRate==null?'—':h.winRate.toFixed(1)+'%')+' · Pick '+(h.pickRate==null?'—':h.pickRate.toFixed(2)+'%')+' · Ban '+(h.banRate==null?'—':h.banRate.toFixed(1)+'%')+'</small>';
      return '<button class="demo-tier-hero" onclick="openTierHero(\''+h.name.replace(/\\/g,"\\\\").replace(/'/g,"\\'")+'\',\''+h.slug+'\')">'+image+h.name+stats+'</button>';
    }).join("");
