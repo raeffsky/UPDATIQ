@@ -22,7 +22,7 @@ jobs:
           const path = require('path');
           const root = '/tmp/mlbb-hero-scraper/heroes';
           const out = 'app/src/main/assets/hero-images';
-          const names = ['Layla','Fanny','Chou','Kagura','Tigreal','Zilong','Miya','Hayabusa','Estes'];
+          const names = fs.readdirSync(root).filter(name => fs.statSync(path.join(root, name)).isDirectory());
           const result = {};
           for (const name of names) {
             const dir = path.join(root, name);
@@ -44,6 +44,7 @@ jobs:
               }
               skills.push({
                 name: skill.name || ('Skill ' + (i + 1)),
+                group: Number(skill.group) || 1,
                 description: skill.description_clean || skill.description_raw || 'Описание навыка пока недоступно.',
                 icon
               });
