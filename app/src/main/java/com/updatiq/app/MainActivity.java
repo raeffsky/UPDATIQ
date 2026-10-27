@@ -111,7 +111,7 @@ public class MainActivity extends Activity {
         super.onResume();
         if (webView != null) {
             webView.onResume();
-            WebView.resumeTimers();
+            webView.resumeTimers();
             webView.post(() -> {
                 if (webView == null) return;
                 webView.requestLayout();
