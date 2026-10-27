@@ -9,9 +9,9 @@ android {
     defaultConfig {
         applicationId 'com.updatiq.app'
         minSdk 23
-        targetSdk 28
-        versionCode 1
-        versionName '0.1.0'
+        targetSdk 35
+        versionCode (System.getenv('GITHUB_RUN_NUMBER')?.toInteger() ?: 1)
+        versionName "0.1.${System.getenv('GITHUB_RUN_NUMBER') ?: '0'}"
     }
 
     signingConfigs {
