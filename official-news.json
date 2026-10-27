@@ -2,8 +2,75 @@
   "source": {
     "name": "MOONTON Games",
     "url": "https://en.moonton.com/news/index.html",
-    "checkedAt": null,
+    "checkedAt": "2026-10-27T16:21:09.034383+00:00",
     "intervalMinutes": 30
   },
-  "articles": []
+  "articles": [
+    {
+      "id": "388",
+      "title": "M8 World Championship to set sail from Bangkok to Istanbul—tournament format, venue, and ticketing unveiled for historic Europe debut!",
+      "publishedAt": "2026/10/22",
+      "summary": "The journey to crown Mobile Legends: Bang Bang's (MLBB) next world champions is set! International video gaming company, MOONTON Games, has unveiled the tournament format, venue, and ticketing details for the M8 World Championship (M8). For the first time, MLBB's flagship international tournament will chart a course across two continents—from Bangkok, Thailand, to Istanbul, Türkiye, for its historic European debut.",
+      "url": "https://en.moonton.com/news/388.html",
+      "image": "https://en.moonton.com/upload/image/20261022/7116b6bbf8c4a81afe5aed8bb62b5ad5.JPEG",
+      "source": "MOONTON Games",
+      "language": "en",
+      "category": "official"
+    },
+    {
+      "id": "387",
+      "title": "MPL Indonesia joins hands with Make-A-Wish® Indonesia to give back to local communities",
+      "publishedAt": "2026/10/22",
+      "summary": "Mobile Legends: Bang Bang Professional League (MPL) Indonesia, through MOONTON Cares, collaborated with Make-A-Wish® Indonesia to welcome six children living with critical illnesses to MPL Arena, giving them the opportunity to experience an RRQ vs ONIC match live.",
+      "url": "https://en.moonton.com/news/387.html",
+      "image": "https://en.moonton.com/upload/image/20261022/b5a21f400843c889bbb76e6d09e3387a.jpg",
+      "source": "MOONTON Games",
+      "language": "en",
+      "category": "official"
+    },
+    {
+      "id": "386",
+      "title": "Mongolia hosts the MCT EA as East Asia's top MLBB teams take on the world for the M8 World Championship",
+      "publishedAt": "2026/10/21",
+      "summary": "Mongolia is set to host the Mobile Legends: Bang Bang (MLBB) East Asia Championship Tour (MCT EA) from 29 to 31 October 2026. Six of the region's top teams converge at M Bank Arena in Ulaanbaatar to take on the world for the M8 World Championship (M8).",
+      "url": "https://en.moonton.com/news/386.html",
+      "image": "https://en.moonton.com/upload/image/20261021/cc132f1cb4e259e83b39c5200a9224d3.PNG",
+      "source": "MOONTON Games",
+      "language": "en",
+      "category": "official"
+    },
+    {
+      "id": "385",
+      "title": "MPL Malaysia Season 18 brings Playoffs fever nationwide—celebrating esports at the heart of Malaysian culture!",
+      "publishedAt": "2026/10/20",
+      "summary": "Malaysia's biggest esports showdown is set to return with a nationwide celebration of esports, entertainment, and local traditions as the Mobile Legends: Bang Bang Professional League (MPL) Malaysia Season 18 Playoffs take over Stadium Juara, Kuala Lumpur, from 28 October to 1 November.",
+      "url": "https://en.moonton.com/news/385.html",
+      "image": "https://en.moonton.com/upload/image/20261020/6b6aa510c8b855652c467a5fb5a91d81.jpg",
+      "source": "MOONTON Games",
+      "language": "en",
+      "category": "official"
+    },
+    {
+      "id": "384",
+      "title": "Thailand takes its next step toward the MCT SEA and the M8 as Leon Esports wins MSL Thailand Season 2",
+      "publishedAt": "2026/10/19",
+      "summary": "Mobile Legends: Bang Bang (MLBB) Super League Thailand (MSL TH) Season 2 has concluded, with Leon Esports (LEON) crowned champion before a sold-out crowd at BCC Hall, Central Ladprao, Bangkok, Thailand.",
+      "url": "https://en.moonton.com/news/384.html",
+      "image": "https://en.moonton.com/upload/image/20261019/a2fa1e153df92d5813a2677acd39bcb6.jpeg",
+      "source": "MOONTON Games",
+      "language": "en",
+      "category": "official"
+    },
+    {
+      "id": "383",
+      "title": "Mobile Legends: Bang Bang celebrates 10th anniversary across 10 countries as it charts the future of its global journey",
+      "publishedAt": "2026/10/16",
+      "summary": "Mobile Legends: Bang Bang (MLBB) marked its 10th anniversary with simultaneous celebrations across 10 countries from 9 to 11 October, drawing tens of thousands of fans to events spanning Asia, Europe, and Latin America. Held under the theme \"ALL IN MLBB\", the celebrations brought MLBB's heroes, communities, and culture to life, marking a decade of growth shaped by its players.",
+      "url": "https://en.moonton.com/news/383.html",
+      "image": "https://en.moonton.com/static/skin/images/flogo.svg",
+      "source": "MOONTON Games",
+      "language": "en",
+      "category": "official"
+    }
+  ]
 }
