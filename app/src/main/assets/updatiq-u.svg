@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="u" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#a9ffff"/>
+      <stop offset=".24" stop-color="#27d9ff"/>
+      <stop offset=".52" stop-color="#236cff"/>
+      <stop offset=".78" stop-color="#763cff"/>
+      <stop offset="1" stop-color="#ff45d6"/>
+    </linearGradient>
+    <linearGradient id="edge" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7efaff"/>
+      <stop offset=".58" stop-color="#347dff"/>
+      <stop offset="1" stop-color="#e85bff"/>
+    </linearGradient>
+    <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="2.2" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+  <path d="M22 12 L43 8 L37 42 L29 53 L41 47 L55 20 L78 14 L69 58 C65 77 53 89 36 85 C19 81 13 68 20 52 L27 37 L13 49 L7 65 L19 81 C28 93 48 96 64 86 C75 79 80 68 83 55 L94 12 L72 18 L61 43 L49 59 C45 65 38 65 34 60 L25 51 L17 63 L29 74 C36 80 46 78 52 69 L63 53 L71 28 L57 33 L47 54 L39 62 L30 59 L36 45 Z" fill="#07132d" opacity=".8" transform="translate(0 2)"/>
+  <path d="M23 10 L45 6 L39 39 L31 50 L43 44 L57 18 L80 12 L71 56 C67 75 55 87 38 83 C21 79 15 66 22 50 L29 35 L15 47 L9 63 L21 79 C30 91 50 94 66 84 C77 77 82 66 85 53 L96 10 L74 16 L63 41 L51 57 C47 63 40 63 36 58 L27 49 L19 61 L31 72 C38 78 48 76 54 67 L65 51 L73 26 L59 31 L49 52 L41 60 L32 57 L38 43 Z" fill="url(#u)" stroke="url(#edge)" stroke-width="1.3" stroke-linejoin="round" filter="url(#glow)"/>
+  <path d="M25 13 L41 10 L35 39 L20 53 Z M59 22 L76 17 L68 53 L58 67 L49 70 L61 51 Z" fill="#a9faff" opacity=".24"/>
+  <path d="M23 16 L39 12 M62 24 L74 20" fill="none" stroke="#e6ffff" stroke-width="1.5" stroke-linecap="round" opacity=".9"/>
+</svg>
