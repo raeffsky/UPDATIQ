@@ -72,7 +72,7 @@ jobs:
           from pathlib import Path
           data = json.loads(Path("official-news.json").read_text(encoding="utf-8"))
           Path("app/src/main/assets/official-news-data.js").write_text(
-              "window.UPDATIQ_OFFICIAL_NEWS = " + json.dumps(data, ensure_ascii=False, separators=(",", ":")) + ";\\n",
+              "window.UPDATIQ_OFFICIAL_NEWS = " + json.dumps(data, ensure_ascii=False, separators=(",", ":")) + ";\n",
               encoding="utf-8"
           )
           print("Embedded official articles:", len(data.get("articles", [])))
