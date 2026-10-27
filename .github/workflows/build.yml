@@ -71,17 +71,58 @@ jobs:
           sed -i 's/UPDATIQ-U-transparent\.png/UPDATIQ-U-transparent.webp/g' app/src/main/assets/index.html
           rm app/src/main/assets/UPDATIQ-U-transparent.png
           rm -f app/src/main/assets/UPDATIQ-App-Icon.jpg
-      - name: Embed collected official news for offline WebView access
+      - name: Embed collected official news and download article images
         run: |
           python3 - <<'PY'
-          import json
+          import hashlib, json, mimetypes, re
           from pathlib import Path
+          from urllib.parse import urlparse
+          import requests
           data = json.loads(Path("official-news.json").read_text(encoding="utf-8"))
+          assets = Path("app/src/main/assets")
+          image_dir = assets / "news-images"
+          image_dir.mkdir(parents=True, exist_ok=True)
+          session = requests.Session()
+          session.headers.update({"User-Agent": "Mozilla/5.0 UPDATIQ/1.0", "Referer": "https://en.moonton.com/"})
+          cache = {}
+          def localize(url):
+              if not isinstance(url, str) or not url.startswith("https://"):
+                  return url
+              if url in cache:
+                  return cache[url]
+              digest = hashlib.sha256(url.encode("utf-8")).hexdigest()[:24]
+              suffix = Path(urlparse(url).path).suffix.lower()
+              if suffix not in (".jpg", ".jpeg", ".png", ".webp", ".gif"):
+                  suffix = ".img"
+              dest = image_dir / (digest + suffix)
+              try:
+                  if not dest.exists():
+                      response = session.get(url, timeout=20)
+                      response.raise_for_status()
+                      if not response.headers.get("content-type", "").lower().startswith("image/"):
+                          raise ValueError("URL did not return an image")
+                      dest.write_bytes(response.content)
+                  local = "news-images/" + dest.name
+                  cache[url] = local
+                  return local
+              except Exception as exc:
+                  print("Image download failed, retaining remote URL:", url, str(exc))
+                  cache[url] = url
+                  return url
+          for article in data.get("articles", []):
+              for key in ("image",):
+                  if article.get(key): article[key] = localize(article[key])
+              for key in ("images",):
+                  if isinstance(article.get(key), list):
+                      article[key] = [localize(url) for url in article[key]]
+              for block in article.get("contentBlocks", []):
+                  if block.get("type") == "image" and block.get("src"):
+                      block["src"] = localize(block["src"])
           Path("app/src/main/assets/official-news-data.js").write_text(
               "window.UPDATIQ_OFFICIAL_NEWS = " + json.dumps(data, ensure_ascii=False, separators=(",", ":")) + ";\n",
               encoding="utf-8"
           )
-          print("Embedded official articles:", len(data.get("articles", [])))
+          print("Embedded official articles:", len(data.get("articles", [])), "cached images:", sum(1 for v in cache.values() if v.startswith("news-images/")))
           PY
       - name: Embed MLBB Nexus tier data for offline WebView access
         run: |
