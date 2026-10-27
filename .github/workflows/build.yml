@@ -92,6 +92,16 @@ jobs:
           fi
           echo "$KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/updatiq-release.jks"
           echo "UPDATIQ_KEYSTORE_FILE=$RUNNER_TEMP/updatiq-release.jks" >> "$GITHUB_ENV"
+      - name: Validate signing key and passwords
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.UPDATIQ_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.UPDATIQ_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.UPDATIQ_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          keytool -list -keystore "$UPDATIQ_KEYSTORE_FILE" -storepass "$KEYSTORE_PASSWORD" >/dev/null
+          keytool -list -keystore "$UPDATIQ_KEYSTORE_FILE" -storepass "$KEYSTORE_PASSWORD" -alias "$KEY_ALIAS" >/dev/null
+          echo "Keystore and alias validated."
       - name: Build signed release APK
         env:
           UPDATIQ_KEYSTORE_PASSWORD: ${{ secrets.UPDATIQ_KEYSTORE_PASSWORD }}
