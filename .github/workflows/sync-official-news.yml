@@ -46,7 +46,7 @@ jobs:
                   url = "https://en.moonton.com/" + url.lstrip("/")
               url = url.split("?", 1)[0]
               def get_text(cls):
-                  m = re.search(r"""<div[^>]*class=["'][^"']*\b""" + re.escape(cls) + r"""\b[^"']*["'][^>]*>(.*?)</div>""", block, re.S | re.I)
+                  m = re.search(r"""<div[^>]*class=["'][^"']*(?<![\\w-])""" + re.escape(cls) + r"""(?![\\w-])[^"']*["'][^>]*>(.*?)</div>""", block, re.S | re.I)
                   if not m:
                       return ""
                   value = re.sub(r"<[^>]+>", " ", m.group(1))
