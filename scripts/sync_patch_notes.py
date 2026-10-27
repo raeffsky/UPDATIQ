@@ -21,14 +21,44 @@ INDEX_URL = "https://mlbbhub.com/patch-notes"
 HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; UPDATIQ/1.0; +https://github.com/raeffsky/UPDATIQ)"}
 
 def clean_text(node):
-    for tag in node.select("script,style,nav,footer,header,button,form,svg"):
+    """Extract the patch body only; exclude site navigation, ads, FAQ and promos."""
+    for tag in node.select("script,style,nav,footer,header,button,form,svg,iframe,aside"):
         tag.decompose()
     lines = []
+    seen = set()
+    stop_patterns = (
+        r"^frequently asked questions",
+        r"^faq\b",
+        r"^additional resources",
+        r"^related articles",
+        r"^you may also like",
+        r"^advertisement$",
+        r"^advert$",
+    )
+    junk_patterns = (
+        r"^advertisement$",
+        r"^advert$",
+        r"^read more$",
+        r"^click here$",
+    )
     for el in node.select("h1,h2,h3,h4,p,li,tr,blockquote"):
         text = " ".join(el.get_text(" ", strip=True).split())
-        if text and (not lines or lines[-1] != text):
+        if not text:
+            continue
+        low = text.casefold()
+        if any(re.search(pattern, low, re.I) for pattern in stop_patterns):
+            break
+        if any(re.search(pattern, low, re.I) for pattern in junk_patterns):
+            continue
+        # Drop FAQ-style teaser copy that points readers back to the webpage.
+        if ("most common questions" in low and "patch" in low) or (
+            "full list" in low and "on this page" in low
+        ):
+            continue
+        if text not in seen:
             lines.append(text)
-    return "\n\n".join(lines)
+            seen.add(text)
+    return "\\n\\n".join(lines)
 
 def split_translation_chunks(text, limit=1800):
     """Split at paragraph boundaries, then split oversized paragraphs safely."""
