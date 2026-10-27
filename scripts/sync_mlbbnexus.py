@@ -50,7 +50,7 @@ def fetch_lane(session, lane):
         if not tier_match:
             continue
         tier = tier_match.group(1).upper()
-        win = number(r"\b(\d{1,2}(?:\.\d+)?)%", text)
+        win = number(r"(\d{1,2}(?:\.\d+)?)%\s*[SABCD]\s+tier", text)
         pick = number(r"Pick\s*(\d{1,2}(?:\.\d+)?)%", text)
         ban = number(r"Ban\s*(\d{1,2}(?:\.\d+)?)%", text)
         img = row.select_one("img")
