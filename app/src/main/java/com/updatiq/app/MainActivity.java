@@ -18,7 +18,7 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Window window = getWindow();
-        window.setStatusBarColor(Color.rgb(7, 12, 26));
+        window.setStatusBarColor(Color.rgb(11, 17, 33));
         window.setNavigationBarColor(Color.rgb(7, 12, 26));
         window.getDecorView().setSystemUiVisibility(0);
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
