@@ -53,7 +53,31 @@ public class MainActivity extends Activity {
         }
         webView.addJavascriptInterface(new AndroidUpdater(), "AndroidUpdater");
         webView.addJavascriptInterface(new AndroidNavigation(), "AndroidNavigation");
-        webView.setWebViewClient(new WebViewClient());
+        webView.addJavascriptInterface(new AndroidExternal(), "AndroidExternal");
+        webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, android.webkit.WebResourceRequest request) {
+                Uri uri = request.getUrl();
+                String scheme = uri.getScheme() == null ? "" : uri.getScheme().toLowerCase();
+                if ("file".equals(scheme) || "about".equals(scheme) || "javascript".equals(scheme)) return false;
+                if ("http".equals(scheme) || "https".equals(scheme) || "market".equals(scheme) || "mailto".equals(scheme)) {
+                    openExternalUrl(uri.toString());
+                    return true;
+                }
+                return true;
+            }
+
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                Uri uri = Uri.parse(url);
+                String scheme = uri.getScheme() == null ? "" : uri.getScheme().toLowerCase();
+                if ("file".equals(scheme) || "about".equals(scheme) || "javascript".equals(scheme)) return false;
+                if ("http".equals(scheme) || "https".equals(scheme) || "market".equals(scheme) || "mailto".equals(scheme)) {
+                    openExternalUrl(url);
+                }
+                return true;
+            }
+        });
         webView.setWebChromeClient(new WebChromeClient());
         setContentView(webView);
         if (savedInstanceState != null) webView.restoreState(savedInstanceState);
@@ -140,6 +164,27 @@ public class MainActivity extends Activity {
     protected void onSaveInstanceState(Bundle outState) {
         if (webView != null) webView.saveState(outState);
         super.onSaveInstanceState(outState);
+    }
+
+    private void openExternalUrl(String url) {
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        } catch (Exception e) {
+            runOnUiThread(() -> Toast.makeText(MainActivity.this, "Не удалось открыть ссылку во внешнем приложении.", Toast.LENGTH_SHORT).show());
+        }
+    }
+
+    private class AndroidExternal {
+        @JavascriptInterface
+        public void open(String url) {
+            if (url == null || url.trim().isEmpty()) return;
+            Uri uri = Uri.parse(url.trim());
+            String scheme = uri.getScheme() == null ? "" : uri.getScheme().toLowerCase();
+            if (!"https".equals(scheme) && !"http".equals(scheme) && !"market".equals(scheme) && !"mailto".equals(scheme)) return;
+            runOnUiThread(() -> openExternalUrl(uri.toString()));
+        }
     }
 
     private class AndroidNavigation {
