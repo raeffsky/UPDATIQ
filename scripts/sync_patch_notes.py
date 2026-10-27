@@ -86,7 +86,7 @@ def extract_structured_patch(soup):
         if not raw or "heroName" not in raw:
             continue
         # MLBBHub embeds its full patch model in a Next.js Flight payload.
-        for match in re.finditer(r'"heroChanges"\\s*:', raw):
+        for match in re.finditer(r'"heroChanges"\s*:', raw):
             start = raw.rfind("{", 0, match.start())
             if start < 0:
                 continue
@@ -139,15 +139,15 @@ def render_structured_patch(patch):
                 lines.append(f"{label}: {before if before is not None else '—'} → {after if after is not None else '—'}")
             elif note:
                 lines.append(f"{label}: {note}" if label else note)
-        sections.append("\\n\\n".join(lines))
+        sections.append("\n\n".join(lines))
     for group in patch.get("systemChanges", []):
         if group.get("category"):
             sections.append(str(group["category"]))
         for item in group.get("items", []):
-            text = "\\n".join(str(item.get(k) or "").strip() for k in ("title", "description") if item.get(k))
+            text = "\n".join(str(item.get(k) or "").strip() for k in ("title", "description") if item.get(k))
             if text:
                 sections.append(text)
-    return "\\n\\n".join(sections)
+    return "\n\n".join(sections)
 
 def split_translation_chunks(text, limit=1800):
     """Split at paragraph boundaries, then split oversized paragraphs safely."""
@@ -259,7 +259,7 @@ def main():
                     if len(text) >= 35 and text not in card_seen:
                         card_lines.append(text)
                         card_seen.add(text)
-            body = "\\n\\n".join(card_lines) if card_lines else clean_text(candidates[0])
+            body = "\n\n".join(card_lines) if card_lines else clean_text(candidates[0])
         if structured and not re.search(r"\\b\\d+\\s*(?:→|->|to)\\s*\\d+", body):
             raise RuntimeError(f"Structured patch data found for {version}, but numeric before/after changes were not rendered.")
         if len(body) < 700:
