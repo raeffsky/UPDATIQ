@@ -2,7 +2,7 @@ name: Sync MLBB Nexus tier lists
 on:
   push:
     paths:
-      - "scripts/sync_mlbbnexus.py"
+      - "scripts/sync_mlbbnexus.py"\n      - "scripts/sync_mlbb_builds.py"
       - ".github/workflows/sync-mlbbnexus-tiers.yml"
   schedule:
     - cron: "17 */6 * * *"
@@ -22,14 +22,14 @@ jobs:
         run: python -m pip install requests beautifulsoup4
       - name: Fetch lane-specific tier lists
         run: python scripts/sync_mlbbnexus.py
-      - name: Commit updated tier data
+      - name: Fetch current hero builds\n        run: python scripts/sync_mlbb_builds.py\n      - name: Commit updated tier and build data
         run: |
-          if git diff --quiet -- mlbbnexus-tiers.json; then
+          if git diff --quiet -- mlbbnexus-tiers.json mlbb-hero-builds.json; then
             echo "Tier data unchanged."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add mlbbnexus-tiers.json
+          git add mlbbnexus-tiers.json mlbb-hero-builds.json
           git commit -m "chore: sync MLBB Nexus lane tier data"
           git push
