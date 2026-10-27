@@ -3,6 +3,8 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  schedule:
+    - cron: '17 */6 * * *'
 permissions:
   contents: write
 jobs:
@@ -71,6 +73,10 @@ jobs:
           sed -i 's/UPDATIQ-U-transparent\.png/UPDATIQ-U-transparent.webp/g' app/src/main/assets/index.html
           rm app/src/main/assets/UPDATIQ-U-transparent.png
           rm -f app/src/main/assets/UPDATIQ-App-Icon.jpg
+      - name: Sync detailed MLBB patch notes
+        run: |
+          python3 -m pip install --quiet requests beautifulsoup4
+          python3 scripts/sync_patch_notes.py
       - name: Embed collected official news and download article images
         run: |
           python3 - <<'PY'
