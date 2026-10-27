@@ -11,19 +11,50 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Fetch current MLBB hero portraits
+      - name: Fetch current MLBB hero portraits and skills
         continue-on-error: true
         run: |
           git clone --depth 1 https://github.com/warungerik/MLBB-Hero-Scraper.git /tmp/mlbb-hero-scraper
           node /tmp/mlbb-hero-scraper/scraper.js
-          mkdir -p app/src/main/assets/hero-images
-          for pair in "Layla:Лейла" "Fanny:Фанни" "Chou:Чу" "Kagura:Кагура" "Tigreal:Тигрил" "Zilong:Зилонг" "Miya:Мия" "Hayabusa:Хаябуса" "Estes:Эстес"; do
-            en="${pair%%:*}"
-            ru="${pair#*:}"
-            if [ -f "/tmp/mlbb-hero-scraper/heroes/$en/icon.png" ]; then
-              cp "/tmp/mlbb-hero-scraper/heroes/$en/icon.png" "app/src/main/assets/hero-images/$en.png"
-            fi
-          done
+          mkdir -p app/src/main/assets/hero-images/skills
+          node <<'NODE'
+          const fs = require('fs');
+          const path = require('path');
+          const root = '/tmp/mlbb-hero-scraper/heroes';
+          const out = 'app/src/main/assets/hero-images';
+          const names = ['Layla','Fanny','Chou','Kagura','Tigreal','Zilong','Miya','Hayabusa','Estes'];
+          const result = {};
+          for (const name of names) {
+            const dir = path.join(root, name);
+            const jsonPath = path.join(dir, 'json.txt');
+            if (!fs.existsSync(jsonPath)) continue;
+            const hero = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
+            const heroOut = path.join(out, 'skills', name);
+            fs.mkdirSync(heroOut, { recursive: true });
+            const skills = [];
+            for (let i = 0; i < (hero.skills || []).length; i++) {
+              const skill = hero.skills[i];
+              const src = path.join(dir, skill.icon_file || '');
+              let icon = '';
+              if (skill.icon_file && fs.existsSync(src)) {
+                const ext = path.extname(skill.icon_file) || '.png';
+                const file = 'skill_' + (i + 1) + ext;
+                fs.copyFileSync(src, path.join(heroOut, file));
+                icon = 'hero-images/skills/' + name + '/' + file;
+              }
+              skills.push({
+                name: skill.name || ('Skill ' + (i + 1)),
+                description: skill.description_clean || skill.description_raw || 'Описание навыка пока недоступно.',
+                icon
+              });
+            }
+            result[name] = skills;
+            const heroIcon = path.join(dir, hero.icon_file || 'icon.png');
+            if (fs.existsSync(heroIcon)) fs.copyFileSync(heroIcon, path.join(out, name + '.png'));
+          }
+          fs.writeFileSync('app/src/main/assets/hero-skills.js', 'window.heroSkillData = ' + JSON.stringify(result) + ';\\n');
+          console.log('Generated skill data for ' + Object.keys(result).length + ' heroes');
+          NODE
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
