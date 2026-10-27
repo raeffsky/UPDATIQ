@@ -168,7 +168,7 @@ def main():
                     card_lines.append(text)
                     card_seen.add(text)
         # If cards are detected, preserve each card as a separate paragraph, including old/new values.
-        body = "\\n\\n".join(card_lines) if card_lines else clean_text(candidates[0])
+        body = "\n\n".join(card_lines) if card_lines else clean_text(candidates[0])
         if len(body) < 700:
             print(f"Skipping {version}: article body too short ({len(body)} chars)", file=sys.stderr)
             continue
