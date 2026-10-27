@@ -1,0 +1,77 @@
+name: Sync official MOONTON news
+on:
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+  push:
+    paths:
+      - '.github/workflows/sync-official-news.yml'
+permissions:
+  contents: write
+concurrency:
+  group: official-news-sync
+  cancel-in-progress: false
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch and parse official MOONTON news
+        run: |
+          python3 - <<'PY'
+          import json, re, urllib.request, html
+          from html.parser import HTMLParser
+          from datetime import datetime, timezone
+          from pathlib import Path
+          URL = "https://en.moonton.com/news/index.html"
+          req = urllib.request.Request(URL, headers={"User-Agent":"UPDATIQ-NewsBot/1.0 (official news link aggregator)"})
+          with urllib.request.urlopen(req, timeout=25) as response:
+              page = response.read().decode("utf-8", "replace")
+          class NewsParser(HTMLParser):
+              def __init__(self):
+                  super().__init__(); self.items=[]; self.current=None; self.capture=None; self.buf=[]
+              def handle_starttag(self, tag, attrs):
+                  attrs=dict(attrs)
+                  if tag=="a" and "/news/" in attrs.get("href","") and re.search(r"/news/\d+\.html",attrs.get("href","")):
+                      self.current={"url":attrs["href"],"title":"","date":"","summary":"","image":""}; self.items.append(self.current)
+                  elif self.current is not None and tag=="img" and attrs.get("src"):
+                      self.current["image"]=attrs["src"]
+                  elif self.current is not None and tag=="div":
+                      cls=attrs.get("class","")
+                      if cls=="d": self.capture="date"; self.buf=[]
+                      elif cls=="t": self.capture="title"; self.buf=[]
+                      elif cls=="c": self.capture="summary"; self.buf=[]
+              def handle_data(self,data):
+                  if self.current is not None and self.capture: self.buf.append(data)
+              def handle_endtag(self,tag):
+                  if tag=="div" and self.capture and self.current is not None:
+                      value=" ".join(" ".join(self.buf).split())
+                      if value and not self.current.get(self.capture): self.current[self.capture]=value
+                      self.capture=None; self.buf=[]
+          parser=NewsParser(); parser.feed(page)
+          unique={}
+          for a in parser.items:
+              url=a.get("url","")
+              if not url.startswith("http"): url="https://en.moonton.com"+url
+              if not re.match(r"https://en\.moonton\.com/news/\d+\.html$",url): continue
+              title=html.unescape(a.get("title","")).strip()
+              if not title or url in unique: continue
+              image=a.get("image","")
+              if image.startswith("//"): image="https:"+image
+              elif image.startswith("/"): image="https://en.moonton.com"+image
+              unique[url]={"id":url.rsplit("/",1)[-1].replace(".html",""),"title":title,"publishedAt":a.get("date",""),"summary":html.unescape(a.get("summary","")).strip(),"url":url,"image":image,"source":"MOONTON Games","language":"en","category":"official"}
+          articles=sorted(unique.values(),key=lambda a:a.get("publishedAt",""),reverse=True)[:60]
+          if not articles:
+              raise SystemExit("No official news extracted; refusing to overwrite last known data.")
+          out={"source":{"name":"MOONTON Games","url":URL,"checkedAt":datetime.now(timezone.utc).isoformat(),"intervalMinutes":30},"articles":articles}
+          Path("official-news.json").write_text(json.dumps(out,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+          print("Collected",len(articles),"official articles")
+          PY
+      - name: Commit updated feed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add official-news.json
+          if git diff --cached --quiet; then echo "No news changes."; exit 0; fi
+          git commit -m "Update official MOONTON news feed"
+          git push
