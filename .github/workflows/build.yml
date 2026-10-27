@@ -79,17 +79,34 @@ jobs:
           sed -i "s/versionCode 1/versionCode ${GITHUB_RUN_NUMBER}/" app/build.gradle
           sed -i "s/versionName '0.1.0'/versionName '0.1.${GITHUB_RUN_NUMBER}'/" app/build.gradle
           grep -E 'versionCode|versionName' app/build.gradle
-      - name: Build debug APK
-        run: gradle --no-daemon assembleDebug
-      - name: Upload APK
+      - name: Decode persistent signing key
+        env:
+          KEYSTORE_BASE64: ${{ secrets.UPDATIQ_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.UPDATIQ_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.UPDATIQ_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.UPDATIQ_KEY_PASSWORD }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ] || [ -z "$KEYSTORE_PASSWORD" ] || [ -z "$KEY_ALIAS" ] || [ -z "$KEY_PASSWORD" ]; then
+            echo "::error::Signing secrets are missing. Add UPDATIQ_KEYSTORE_BASE64, UPDATIQ_KEYSTORE_PASSWORD, UPDATIQ_KEY_ALIAS and UPDATIQ_KEY_PASSWORD in GitHub repository Actions secrets."
+            exit 1
+          fi
+          echo "$KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/updatiq-release.jks"
+          echo "UPDATIQ_KEYSTORE_FILE=$RUNNER_TEMP/updatiq-release.jks" >> "$GITHUB_ENV"
+      - name: Build signed release APK
+        env:
+          UPDATIQ_KEYSTORE_PASSWORD: ${{ secrets.UPDATIQ_KEYSTORE_PASSWORD }}
+          UPDATIQ_KEY_ALIAS: ${{ secrets.UPDATIQ_KEY_ALIAS }}
+          UPDATIQ_KEY_PASSWORD: ${{ secrets.UPDATIQ_KEY_PASSWORD }}
+        run: gradle --no-daemon assembleRelease
+      - name: Upload signed APK
         uses: actions/upload-artifact@v4
         with:
-          name: UPDATIQ-debug
-          path: app/build/outputs/apk/debug/app-debug.apk
+          name: UPDATIQ-signed
+          path: app/build/outputs/apk/release/app-release.apk
           if-no-files-found: error
 
       - name: Prepare release APK
-        run: cp app/build/outputs/apk/debug/app-debug.apk UPDATIQ.apk
+        run: cp app/build/outputs/apk/release/app-release.apk UPDATIQ.apk
       - name: Publish latest APK for in-app updates
         uses: ncipollo/release-action@v1
         with:
