@@ -1,0 +1,39 @@
+name: Generate UPDATIQ signing key (one-time)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: write
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate permanent signing key
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p signing-output
+          STORE_PASS="$(openssl rand -base64 30 | tr -d '/+=' | cut -c1-32)"
+          KEY_PASS="$(openssl rand -base64 30 | tr -d '/+=' | cut -c1-32)"
+          keytool -genkeypair -v \
+            -keystore signing-output/updatiq-release.jks \
+            -storepass "$STORE_PASS" \
+            -keypass "$KEY_PASS" \
+            -alias updatiq \
+            -keyalg RSA -keysize 3072 -validity 10000 \
+            -dname "CN=UPDATIQ, OU=Android, O=UPDATIQ, L=NA, ST=NA, C=US"
+          base64 -w 0 signing-output/updatiq-release.jks > signing-output/UPDATIQ_KEYSTORE_BASE64.txt
+          {
+            echo "UPDATIQ_KEYSTORE_PASSWORD=$STORE_PASS"
+            echo "UPDATIQ_KEY_ALIAS=updatiq"
+            echo "UPDATIQ_KEY_PASSWORD=$KEY_PASS"
+          } > signing-output/credentials.txt
+          chmod 600 signing-output/*
+          rm -f signing-output/updatiq-release.jks
+      - name: Upload key material once
+        uses: actions/upload-artifact@v4
+        with:
+          name: UPDATIQ-signing-key-ONE-TIME-KEEP-PRIVATE
+          path: signing-output/
+          retention-days: 1
+          if-no-files-found: error
