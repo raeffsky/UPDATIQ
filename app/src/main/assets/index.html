@@ -95,11 +95,11 @@ function renderTiers(){
    rows.innerHTML='<div class="demo-empty">Данные MLBB Nexus пока недоступны. Последняя успешная версия появится после синхронизации.</div>';
    return;
  }
- if(tierMode==="stats"){lane.heroes.sort((a,b)=>(Number(b[tierMetric])||0)-(Number(a[tierMetric])||0));}else{heading.innerHTML="<h3>"+laneTitles[tierRole]+" · Турнирный тир-лист</h3><span class=\"tag\">ПРО-СЦЕНА</span>";rows.innerHTML='<div class="demo-empty">Турнирные результаты ещё не подключены. Здесь будет отдельный тир-лист по профессиональным матчам, без подмены рейтинговой статистикой.</div>';const stamp=document.getElementById("tierDataStamp");if(stamp)stamp.textContent="Турнирные данные: источник ожидает подключения";return;}
+ if(tierMode==="stats"){const sorted=[...lane.heroes].sort((a,b)=>(Number(b[tierMetric])||0)-(Number(a[tierMetric])||0));const tierAt=i=>i<Math.ceil(sorted.length*.2)?"S":i<Math.ceil(sorted.length*.4)?"A":i<Math.ceil(sorted.length*.6)?"B":i<Math.ceil(sorted.length*.8)?"C":"D";sorted.forEach((h,i)=>h._metricTier=tierAt(i));lane.heroes=sorted;}else{heading.innerHTML="<h3>"+laneTitles[tierRole]+" · Турнирный тир-лист</h3><span class=\"tag\">ПРО-СЦЕНА</span>";rows.innerHTML='<div class="demo-empty">Турнирные результаты ещё не подключены. Здесь будет отдельный тир-лист по профессиональным матчам, без подмены рейтинговой статистикой.</div>';const stamp=document.getElementById("tierDataStamp");if(stamp)stamp.textContent="Турнирные данные: источник ожидает подключения";return;}
  const counts={};["S","A","B","C","D"].forEach(t=>counts[t]=lane.heroes.filter(h=>h.tier===t).length);
  heading.innerHTML="<h3>"+laneTitles[tierRole]+"</h3><span class=\"tag\">"+lane.heroes.length+" героев · MLBB Nexus</span>";
  rows.innerHTML=["S","A","B","C","D"].map(t=>{
-   const heroes=lane.heroes.filter(h=>h.tier===t);
+   const heroes=lane.heroes.filter(h=>(tierMode==="stats"?(h._metricTier||h.tier):h.tier)===t);
    const content=heroes.map(h=>{
      const image=h.image?'<img class="tier-portrait" src="'+h.image+'" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\'"><iconify-icon class="tier-fallback" style="display:none" icon="tabler:shield-question"></iconify-icon>':'<iconify-icon class="tier-fallback" icon="tabler:shield-question"></iconify-icon>';
      const stats='<small>WR '+(h.winRate==null?'—':h.winRate.toFixed(1)+'%')+' · Pick '+(h.pickRate==null?'—':h.pickRate.toFixed(2)+'%')+' · Ban '+(h.banRate==null?'—':h.banRate.toFixed(1)+'%')+'</small>';
