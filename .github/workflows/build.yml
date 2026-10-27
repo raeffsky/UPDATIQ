@@ -11,7 +11,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Fetch current MLBB hero portraits and skills
+      - name: Install image optimizer
+        run: sudo apt-get update && sudo apt-get install -y webp
+      - name: Fetch and optimize MLBB hero portraits and skills
         continue-on-error: true
         run: |
           git clone --depth 1 https://github.com/warungerik/MLBB-Hero-Scraper.git /tmp/mlbb-hero-scraper
@@ -20,6 +22,7 @@ jobs:
           node <<'NODE'
           const fs = require('fs');
           const path = require('path');
+          const { execFileSync } = require('child_process');
           const root = '/tmp/mlbb-hero-scraper/heroes';
           const out = 'app/src/main/assets/hero-images';
           const names = fs.readdirSync(root).filter(name => fs.statSync(path.join(root, name)).isDirectory());
@@ -37,9 +40,9 @@ jobs:
               const src = path.join(dir, skill.icon_file || '');
               let icon = '';
               if (skill.icon_file && fs.existsSync(src)) {
-                const ext = path.extname(skill.icon_file) || '.png';
-                const file = 'skill_' + (i + 1) + ext;
-                fs.copyFileSync(src, path.join(heroOut, file));
+                const file = 'skill_' + (i + 1) + '.webp';
+                const dest = path.join(heroOut, file);
+                execFileSync('cwebp', ['-quiet', '-q', '76', '-resize', '128', '128', src, '-o', dest]);
                 icon = 'hero-images/skills/' + name + '/' + file;
               }
               skills.push({
@@ -51,11 +54,18 @@ jobs:
             }
             result[name] = skills;
             const heroIcon = path.join(dir, hero.icon_file || 'icon.png');
-            if (fs.existsSync(heroIcon)) fs.copyFileSync(heroIcon, path.join(out, name + '.png'));
+            if (fs.existsSync(heroIcon)) execFileSync('cwebp', ['-quiet', '-q', '80', '-resize', '256', '256', heroIcon, '-o', path.join(out, name + '.webp')]);
           }
           fs.writeFileSync('app/src/main/assets/hero-skills.js', 'window.heroSkillData = ' + JSON.stringify(result) + ';\n');
-          console.log('Generated skill data for ' + Object.keys(result).length + ' heroes');
+          console.log('Generated optimized skill data for ' + Object.keys(result).length + ' heroes');
           NODE
+      - name: Optimize brand assets and remove unused image
+        run: |
+          cwebp -quiet -q 82 -alpha_q 90 app/src/main/assets/UPDATIQ-U-transparent.png -o app/src/main/assets/UPDATIQ-U-transparent.webp
+          sed -i 's/UPDATIQ-U-transparent\\.png/UPDATIQ-U-transparent.webp/g' app/src/main/assets/index.html
+          rm app/src/main/assets/UPDATIQ-U-transparent.png
+          rm -f app/src/main/assets/UPDATIQ-App-Icon.jpg
+                    NODE
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
