@@ -153,13 +153,12 @@ jobs:
       - name: Prepare release APK
         run: cp app/build/outputs/apk/release/app-release.apk UPDATIQ.apk
       - name: Publish latest APK for in-app updates
-        uses: ncipollo/release-action@v1
-        with:
-          tag: latest
-          name: UPDATIQ Latest
-          body: Автоматическая актуальная сборка UPDATIQ для встроенного обновления.
-          artifacts: UPDATIQ.apk
-          allowUpdates: true
-          replacesArtifacts: true
-          makeLatest: true
-          prerelease: false
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if gh release view latest >/dev/null 2>&1; then
+            gh release upload latest UPDATIQ.apk --clobber
+            gh release edit latest --title "UPDATIQ Latest" --notes "Автоматическая актуальная сборка UPDATIQ для встроенного обновления." --latest
+          else
+            gh release create latest UPDATIQ.apk --title "UPDATIQ Latest" --notes "Автоматическая актуальная сборка UPDATIQ для встроенного обновления."
+          fi
