@@ -77,6 +77,23 @@ jobs:
           )
           print("Embedded official articles:", len(data.get("articles", [])))
           PY
+      - name: Embed MLBB Nexus tier data for offline WebView access
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          source = Path("mlbbnexus-tiers.json")
+          if source.exists():
+              data = json.loads(source.read_text(encoding="utf-8"))
+              Path("app/src/main/assets/tier-data.js").write_text(
+                  "window.UPDATIQ_MLBBNEXUS_TIERS = " + json.dumps(data, ensure_ascii=False, separators=(",", ":")) + ";\\n",
+                  encoding="utf-8"
+              )
+              print("Embedded MLBB Nexus lane lists:", {k: v.get("count", 0) for k, v in data.get("lanes", {}).items()})
+          else:
+              Path("app/src/main/assets/tier-data.js").write_text("window.UPDATIQ_MLBBNEXUS_TIERS = null;\\n", encoding="utf-8")
+              print("No synced tier data yet; app will show an unavailable-data state.")
+          PY
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
