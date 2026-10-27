@@ -46,6 +46,7 @@ public class MainActivity extends Activity {
         settings.setAllowFileAccess(true);
         settings.setLoadsImagesAutomatically(true);
         webView.addJavascriptInterface(new AndroidUpdater(), "AndroidUpdater");
+        webView.addJavascriptInterface(new AndroidNavigation(), "AndroidNavigation");
         webView.setWebViewClient(new WebViewClient());
         webView.setWebChromeClient(new WebChromeClient());
         setContentView(webView);
@@ -135,9 +136,24 @@ public class MainActivity extends Activity {
         super.onSaveInstanceState(outState);
     }
 
+    private class AndroidNavigation {
+        @JavascriptInterface
+        public void exitApp() {
+            runOnUiThread(() -> finish());
+        }
+    }
+
     @Override
     public void onBackPressed() {
-        if (webView != null && webView.canGoBack()) webView.goBack();
-        else super.onBackPressed();
+        if (webView != null) {
+            webView.evaluateJavascript(
+                "(function(){return window.handleAppBack?window.handleAppBack():false})()",
+                value -> {
+                    if ("false".equals(value) || value == null) finish();
+                }
+            );
+        } else {
+            super.onBackPressed();
+        }
     }
 }
