@@ -106,6 +106,30 @@ public class MainActivity extends Activity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if (webView != null) {
+            webView.onResume();
+            WebView.resumeTimers();
+            webView.post(() -> {
+                if (webView == null) return;
+                webView.requestLayout();
+                webView.invalidate();
+                webView.evaluateJavascript(
+                    "if(document.visibilityState==='visible'){window.dispatchEvent(new Event('resize'));}",
+                    null
+                );
+            });
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        if (webView != null) webView.onPause();
+        super.onPause();
+    }
+
+    @Override
     protected void onSaveInstanceState(Bundle outState) {
         if (webView != null) webView.saveState(outState);
         super.onSaveInstanceState(outState);
