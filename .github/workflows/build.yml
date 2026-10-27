@@ -65,7 +65,6 @@ jobs:
           sed -i 's/UPDATIQ-U-transparent\\.png/UPDATIQ-U-transparent.webp/g' app/src/main/assets/index.html
           rm app/src/main/assets/UPDATIQ-U-transparent.png
           rm -f app/src/main/assets/UPDATIQ-App-Icon.jpg
-                    NODE
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
