@@ -16,6 +16,7 @@ jobs:
           STORE_PASS="$(openssl rand -base64 30 | tr -d '/+=' | cut -c1-32)"
           KEY_PASS="$(openssl rand -base64 30 | tr -d '/+=' | cut -c1-32)"
           keytool -genkeypair -v \
+            -storetype JKS \
             -keystore signing-output/updatiq-release.jks \
             -storepass "$STORE_PASS" \
             -keypass "$KEY_PASS" \
