@@ -56,14 +56,14 @@ def translate_to_russian(text, session):
     chunks = split_translation_chunks(text)
     for index, chunk in enumerate(chunks):
         last_error = None
-        for attempt in range(5):
+        for attempt in range(6):
             try:
-                response = session.get(endpoint, params={
+                response = session.post("https://translate.google.com/translate_a/single", data={
                     "client": "gtx", "sl": "en", "tl": "ru", "dt": "t", "q": chunk
                 }, timeout=45)
                 if response.status_code == 429 or response.status_code >= 500:
                     last_error = RuntimeError(f"Translation service HTTP {response.status_code}")
-                    time.sleep(min(8 * (attempt + 1), 40))
+                    time.sleep(min(20 * (attempt + 1), 120))
                     continue
                 response.raise_for_status()
                 payload = response.json()
@@ -80,13 +80,13 @@ def translate_to_russian(text, session):
                 break
             except (requests.RequestException, ValueError, RuntimeError) as exc:
                 last_error = exc
-                if attempt < 4:
+                if attempt < 5:
                     time.sleep(min(8 * (attempt + 1), 40))
         if last_error:
             raise last_error
         # Avoid hammering a public translation endpoint across long articles.
         if index < len(chunks) - 1:
-            time.sleep(1.5)
+            time.sleep(3)
     return "\n\n".join(translated)
 
 def main():
