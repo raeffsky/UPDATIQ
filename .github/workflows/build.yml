@@ -54,7 +54,11 @@ jobs:
             }
             result[name] = skills;
             const heroIcon = path.join(dir, hero.icon_file || 'icon.png');
-            if (fs.existsSync(heroIcon)) execFileSync('cwebp', ['-quiet', '-q', '80', '-resize', '256', '0', heroIcon, '-o', path.join(out, name + '.webp')]);
+            if (fs.existsSync(heroIcon)) {
+              execFileSync('cwebp', ['-quiet', '-q', '80', '-resize', '256', '0', heroIcon, '-o', path.join(out, name + '.webp')]);
+              const slug = String(hero.name || name).normalize('NFD').replace(/[\\u0300-\\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+              if (slug && slug !== name.toLowerCase()) execFileSync('cwebp', ['-quiet', '-q', '80', '-resize', '256', '0', heroIcon, '-o', path.join(out, slug + '.webp')]);
+            }
           }
           fs.writeFileSync('app/src/main/assets/hero-skills.js', 'window.heroSkillData = ' + JSON.stringify(result) + ';\n');
           console.log('Generated optimized skill data for ' + Object.keys(result).length + ' heroes');
