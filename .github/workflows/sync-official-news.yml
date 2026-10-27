@@ -117,7 +117,29 @@ jobs:
                               elif src.startswith("/"): src = "https://en.moonton.com" + src
                               if src.startswith("https://") and src not in images: images.append(src)
                           if images: article["images"] = images
-                          print("Full article", article["id"], "characters", len(article["fullText"]), "images", len(article["images"]))
+                          # Preserve source order: text blocks stay between their original images.
+                          ordered = []
+                          token_re = re.compile(r"(?is)<(img|p|h[1-6]|li|blockquote|figure)\b[^>]*>.*?(?:</\1\s*>|$)|<img\b[^>]*>")
+                          for token in token_re.finditer(body):
+                              fragment = token.group(0)
+                              tag = re.match(r"(?is)<(\w+)", fragment)
+                              if not tag: continue
+                              tag_name = tag.group(1).lower()
+                              if tag_name == "img":
+                                  im = re.search(r"""(?:src|data-src|_src)=["']([^"']+)["']""", fragment, re.I)
+                                  if im:
+                                      src = im.group(1)
+                                      if src.startswith("//"): src = "https:" + src
+                                      elif src.startswith("/"): src = "https://en.moonton.com" + src
+                                      if src.startswith("https://"): ordered.append({"type":"image","src":src})
+                              else:
+                                  txt = clean_html(fragment)
+                                  if txt: ordered.append({"type":"text","text":txt})
+                          blocks_ru = []
+                          for block in ordered:
+                              blocks_ru.append({"type":"text","text":translate_ru(block["text"])} if block["type"] == "text" else block)
+                          if blocks_ru: article["contentBlocks"] = blocks_ru
+                          print("Full article", article["id"], "characters", len(article["fullText"]), "images", len(article["images"]), "ordered blocks", len(blocks_ru))
                       else: print("Article body not found:", article["id"])
                   except Exception as exc: print("Article fetch failed:", article["id"], str(exc)[:120])
               else:
