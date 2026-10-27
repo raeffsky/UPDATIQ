@@ -74,4 +74,8 @@ jobs:
           git add official-news.json
           if git diff --cached --quiet; then echo "No news changes."; exit 0; fi
           git commit -m "Update official MOONTON news feed"
-          git push
+          # API commits or another workflow may update main after checkout.
+          # Rebase the generated feed commit onto the latest remote before pushing.
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
