@@ -25,52 +25,37 @@ jobs:
         run: |
           python3 - <<'PY'
           import json, re, html
-          from html.parser import HTMLParser
           from datetime import datetime, timezone
           from pathlib import Path
           URL = "https://en.moonton.com/news/index.html"
           page = Path("/tmp/moonton-news.html").read_text(encoding="utf-8", errors="replace")
-          class NewsParser(HTMLParser):
-              def __init__(self):
-                  super().__init__(); self.items=[]; self.current=None; self.capture=None; self.buf=[]
-              def handle_starttag(self, tag, attrs):
-                  attrs=dict(attrs)
-                  if tag=="a" and "/news/" in attrs.get("href","") and re.search(r"/news/\d+\.html",attrs.get("href","")):
-                      self.current={"url":attrs["href"],"title":"","date":"","summary":"","image":""}; self.items.append(self.current)
-                  elif self.current is not None and tag=="img" and attrs.get("src"):
-                      self.current["image"]=attrs["src"]
-                  elif self.current is not None and tag=="div":
-                      cls=attrs.get("class","")
-                      if cls=="d": self.capture="date"; self.buf=[]
-                      elif cls=="t": self.capture="title"; self.buf=[]
-                      elif cls=="c": self.capture="summary"; self.buf=[]
-              def handle_data(self,data):
-                  if self.current is not None and self.capture: self.buf.append(data)
-              def handle_endtag(self,tag):
-                  if tag=="div" and self.capture and self.current is not None:
-                      value=" ".join(" ".join(self.buf).split())
-                      if value and not self.current.get(self.capture): self.current[self.capture]=value
-                      self.capture=None; self.buf=[]
-          parser=NewsParser(); parser.feed(page)
-          unique={}
-          for a in parser.items:
-              url=a.get("url","")
-              if not url.startswith("http"): url="https://en.moonton.com"+url
-              if not re.match(r"https://en\.moonton\.com/news/\d+\.html$",url): continue
-              title=html.unescape(a.get("title","")).strip()
-              if not title or url in unique: continue
-              image=a.get("image","")
-              if image.startswith("//"): image="https:"+image
-              elif image.startswith("/"): image="https://en.moonton.com"+image
-              unique[url]={"id":url.rsplit("/",1)[-1].replace(".html",""),"title":title,"publishedAt":a.get("date",""),"summary":html.unescape(a.get("summary","")).strip(),"url":url,"image":image,"source":"MOONTON Games","language":"en","category":"official"}
-          articles=sorted(unique.values(),key=lambda a:a.get("publishedAt",""),reverse=True)[:60]
+          def text_for(block, cls):
+              m = re.search(r'<div[^>]*class=["\\'][^"\\']*\\b' + re.escape(cls) + r'\\b[^"\\']*["\\'][^>]*>(.*?)</div>', block, re.S | re.I)
+              if not m: return ""
+              value = re.sub(r'<[^>]+>', ' ', m.group(1))
+              return " ".join(html.unescape(value).split())
+          unique = {}
+          for li in re.findall(r'<li\\b[^>]*>(.*?)</li>', page, re.S | re.I):
+              link = re.search(r'<a[^>]+href=["\\'](https://en\\.moonton\\.com/news/\\d+\\.html)["\\']', li, re.I)
+              if not link: continue
+              url = link.group(1)
+              title = text_for(li, "t")
+              if not title: continue
+              date = text_for(li, "d")
+              summary = text_for(li, "c")
+              img = re.search(r'<div[^>]*class=["\\'][^"\\']*\\bimg\\b[^"\\']*["\\'][^>]*>.*?<img[^>]+src=["\\']([^"\\']+)["\\']', li, re.S | re.I)
+              image = img.group(1) if img else ""
+              if image.startswith("//"): image = "https:" + image
+              elif image.startswith("/"): image = "https://en.moonton.com" + image
+              unique[url] = {"id":url.rsplit("/",1)[-1].replace(".html",""),"title":title,"publishedAt":date,"summary":summary,"url":url,"image":image,"source":"MOONTON Games","language":"en","category":"official"}
+          articles = sorted(unique.values(), key=lambda a:a.get("publishedAt",""), reverse=True)[:60]
           if not articles:
               raise SystemExit("No official news extracted; refusing to overwrite last known data.")
-          out={"source":{"name":"MOONTON Games","url":URL,"checkedAt":datetime.now(timezone.utc).isoformat(),"intervalMinutes":30},"articles":articles}
-          Path("official-news.json").write_text(json.dumps(out,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+          out = {"source":{"name":"MOONTON Games","url":URL,"checkedAt":datetime.now(timezone.utc).isoformat(),"intervalMinutes":30},"articles":articles}
+          Path("official-news.json").write_text(json.dumps(out,ensure_ascii=False,indent=2)+"\\n",encoding="utf-8")
           print("Collected",len(articles),"official articles")
-          PY
-      - name: Commit updated feed
+          print("Articles with images:",sum(bool(a["image"]) for a in articles))
+          PY      - name: Commit updated feed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
