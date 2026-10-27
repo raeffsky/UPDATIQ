@@ -58,7 +58,7 @@ def clean_text(node):
         if text not in seen:
             lines.append(text)
             seen.add(text)
-    return "\\n\\n".join(lines)
+    return "\n\n".join(lines)
 
 def split_translation_chunks(text, limit=1800):
     """Split at paragraph boundaries, then split oversized paragraphs safely."""
@@ -149,10 +149,31 @@ def main():
         if not candidates:
             print(f"Skipping {version}: no article body detected", file=sys.stderr)
             continue
-        body = clean_text(candidates[0])
+        # Prefer the page's actual change cards over its SEO summary and FAQ prose.
+        roots = article_soup.select("main, article, [class*='patch'], [class*='content']")
+        card_lines = []
+        card_seen = set()
+        card_selector = (
+            "[class*='hero-card'], [class*='change-card'], [class*='patch-card'], "
+            "[class*='stat-card'], [class*='skill-card'], [class*='hero-change'], "
+            "[class*='balance-card'], [class*='change-item'], [class*='patch-item']"
+        )
+        for root in roots:
+            for card in root.select(card_selector):
+                # Skip nested matches; the outer card contains its complete stat changes.
+                if card.find_parent(class_=re.compile(r"(hero-card|change-card|patch-card|stat-card|skill-card|hero-change|balance-card|change-item|patch-item)")):
+                    continue
+                text = " ".join(card.get_text(" ", strip=True).split())
+                if len(text) >= 35 and text not in card_seen:
+                    card_lines.append(text)
+                    card_seen.add(text)
+        # If cards are detected, preserve each card as a separate paragraph, including old/new values.
+        body = "\\n\\n".join(card_lines) if card_lines else clean_text(candidates[0])
         if len(body) < 700:
             print(f"Skipping {version}: article body too short ({len(body)} chars)", file=sys.stderr)
             continue
+        if card_lines and not re.search(r"\\b\\d+\\s*(?:→|->|to)\\s*\\d+", body):
+            print(f"Warning: detected change cards for {version}, but no numeric before/after values; verify source markup.", file=sys.stderr)
         title = f"MLBB Patch Notes {version}"
         date_match = re.search(r"(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},?\s+20\d{2}", page.text, re.I)
         date = date_match.group(0) if date_match else datetime.now(timezone.utc).strftime("%Y-%m-%d")
