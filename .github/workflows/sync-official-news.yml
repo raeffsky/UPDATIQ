@@ -64,11 +64,64 @@ jobs:
               if image.startswith("//"): image = "https:" + image
               elif image.startswith("/"): image = "https://en.moonton.com" + image
               unique[url] = {"id":url.rsplit("/",1)[-1].replace(".html",""),"title":title,"publishedAt":date,"summary":summary,"url":url,"image":image,"source":"MOONTON Games","language":"en","category":"official"}
-          articles = sorted(unique.values(), key=lambda a:a.get("publishedAt",""), reverse=True)[:60]
+          articles = sorted(unique.values(), key=lambda a:a.get("publishedAt",""), reverse=True)[:40]
           print("Article links with titles:", len(articles))
           if not articles:
               print("HTML sample:", re.sub(r"\s+", " ", page[:1000]))
               raise SystemExit("No official news extracted; refusing to overwrite last known data.")
+          from urllib.parse import urlencode
+          from urllib.request import Request, urlopen
+          import time
+          def translate_ru(text):
+              text = (text or "").strip()
+              if not text: return ""
+              try:
+                  result = []
+                  for offset in range(0, len(text), 2800):
+                      query = urlencode({"client":"gtx","sl":"en","tl":"ru","dt":"t","q":text[offset:offset+2800]})
+                      req = Request("https://translate.googleapis.com/translate_a/single?" + query, headers={"User-Agent":"Mozilla/5.0 UPDATIQ"})
+                      with urlopen(req, timeout=18) as response: payload = json.loads(response.read().decode("utf-8"))
+                      result.append("".join(part[0] for part in payload[0] if part and part[0]))
+                      time.sleep(0.12)
+                  return "".join(result)
+              except Exception as exc:
+                  print("Translation unavailable:", str(exc)[:120])
+                  return text
+          def clean_html(fragment):
+              fragment = re.sub(r"(?is)<(script|style|noscript)\b.*?</\1>", " ", fragment)
+              fragment = re.sub(r"(?i)</p\s*>|<br\s*/?>|</h[1-6]\s*>|</li\s*>", "\n\n", fragment)
+              fragment = re.sub(r"(?is)<[^>]+>", " ", fragment)
+              fragment = html.unescape(fragment).replace("\xa0", " ")
+              return re.sub(r"[ \t]+", " ", re.sub(r"\n[ \t]+", "\n", fragment)).strip()
+          for index, article in enumerate(articles):
+              article["titleRu"] = translate_ru(article["title"])
+              article["summaryRu"] = translate_ru(article.get("summary", ""))
+              article["fullText"] = ""
+              article["fullTextRu"] = ""
+              article["images"] = [article["image"]] if article.get("image") else []
+              if index < 30:
+                  try:
+                      req = Request(article["url"], headers={"User-Agent":"Mozilla/5.0 UPDATIQ-NewsBot/1.0"})
+                      with urlopen(req, timeout=22) as response: article_html = response.read().decode("utf-8", errors="replace")
+                      match = re.search(r"""<div[^>]*class=["'][^"']*\barticle\b[^"']*\bnew-b\b[^"']*["'][^>]*>(.*?)</div>\s*</div>""", article_html, re.S | re.I)
+                      if not match:
+                          match = re.search(r"""<div[^>]*class=["'][^"']*\bnew-b\b[^"']*["'][^>]*>(.*?)</div>\s*</div>""", article_html, re.S | re.I)
+                      body = match.group(1) if match else ""
+                      if body:
+                          article["fullText"] = clean_html(body)
+                          article["fullTextRu"] = translate_ru(article["fullText"])
+                          found = re.findall(r"""<(?:img|source)\b[^>]*(?:src|data-src|_src)=["']([^"']+)["']""", body, re.I)
+                          images = []
+                          for src in found:
+                              if src.startswith("//"): src = "https:" + src
+                              elif src.startswith("/"): src = "https://en.moonton.com" + src
+                              if src.startswith("https://") and src not in images: images.append(src)
+                          if images: article["images"] = images
+                          print("Full article", article["id"], "characters", len(article["fullText"]), "images", len(article["images"]))
+                      else: print("Article body not found:", article["id"])
+                  except Exception as exc: print("Article fetch failed:", article["id"], str(exc)[:120])
+              else:
+                  article["fullTextRu"] = article["summaryRu"]
           out = {"source":{"name":"MOONTON Games","url":URL,"checkedAt":datetime.now(timezone.utc).isoformat(),"intervalMinutes":30},"articles":articles}
           Path("official-news.json").write_text(json.dumps(out,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
           print("Collected",len(articles),"official articles")
