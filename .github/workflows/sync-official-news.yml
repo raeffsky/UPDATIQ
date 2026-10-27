@@ -171,7 +171,44 @@ jobs:
                   except Exception as exc: print("Article fetch failed:", article["id"], str(exc)[:120])
               else:
                   article["fullTextRu"] = article["summaryRu"]
-          out = {"source":{"name":"MOONTON Games","url":URL,"checkedAt":datetime.now(timezone.utc).isoformat(),"intervalMinutes":30},"articles":articles}
+          # Also collect official game-update / patch articles from mobilelegends.com.
+          UPDATE_URL = "https://www.mobilelegends.com/news/"
+          try:
+              req = Request(UPDATE_URL, headers={"User-Agent":"Mozilla/5.0 UPDATIQ-NewsBot/1.0"})
+              with urlopen(req, timeout=25) as response:
+                  update_page = response.read().decode("utf-8", errors="replace")
+              print("Mobile Legends update page bytes:", len(update_page))
+              found = {}
+              for match in re.finditer(r"""(?is)<a\b[^>]*href=["']([^"']*/news/detail-\d+[^"']*)["'][^>]*>(.*?)</a>""", update_page):
+                  link, fragment = match.group(1), match.group(2)
+                  title = clean_html(fragment)
+                  if not title or len(title) < 5:
+                      continue
+                  url = link if link.startswith("http") else "https://www.mobilelegends.com" + (link if link.startswith("/") else "/" + link)
+                  url = url.split("?",1)[0]
+                  context_start = max(0, match.start()-1800)
+                  context_end = min(len(update_page), match.end()+1800)
+                  context = update_page[context_start:context_end]
+                  image_match = re.search(r"""(?is)<img\b[^>]*(?:src|data-src)=["']([^"']+)["']""", context)
+                  image = image_match.group(1) if image_match else ""
+                  if image.startswith("//"): image = "https:" + image
+                  elif image.startswith("/"): image = "https://www.mobilelegends.com" + image
+                  date_match = re.search(r"""20\d{2}[-/]\d{2}[-/]\d{2}""", context)
+                  date = date_match.group(0) if date_match else ""
+                  found[url] = {"id":"ml-updates-"+re.search(r"detail-(\d+)",url).group(1),"title":title,"publishedAt":date,"summary":"Официальные заметки об обновлениях и изменениях игры.","url":url,"image":image,"images":[image] if image else [],"source":"Mobile Legends","language":"en","category":"update"}
+              updates = sorted(found.values(), key=lambda a:a.get("publishedAt",""), reverse=True)[:30]
+              for article in updates:
+                  article["titleRu"] = translate_ru(article["title"])
+                  article["summaryRu"] = translate_ru(article["summary"])
+                  article["fullText"] = ""
+                  article["fullTextRu"] = article["summaryRu"]
+              print("Mobile Legends update articles:", len(updates))
+              # Keep the build safe: a blocked or redesigned source must not erase the MOONTON feed.
+              if updates:
+                  articles.extend(updates)
+          except Exception as exc:
+              print("Mobile Legends update source unavailable:", str(exc)[:180])
+          out = {"source":{"name":"MOONTON Games + Mobile Legends","url":URL,"updatesUrl":UPDATE_URL,"checkedAt":datetime.now(timezone.utc).isoformat(),"intervalMinutes":30},"articles":articles}
           Path("official-news.json").write_text(json.dumps(out,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
           print("Collected",len(articles),"official articles")
           print("Articles with images:",sum(bool(a["image"]) for a in articles))
