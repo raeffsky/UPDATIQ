@@ -62,7 +62,7 @@ jobs:
       - name: Optimize brand assets and remove unused image
         run: |
           cwebp -quiet -q 82 -alpha_q 90 app/src/main/assets/UPDATIQ-U-transparent.png -o app/src/main/assets/UPDATIQ-U-transparent.webp
-          sed -i 's/UPDATIQ-U-transparent\\.png/UPDATIQ-U-transparent.webp/g' app/src/main/assets/index.html
+          sed -i 's/UPDATIQ-U-transparent\.png/UPDATIQ-U-transparent.webp/g' app/src/main/assets/index.html
           rm app/src/main/assets/UPDATIQ-U-transparent.png
           rm -f app/src/main/assets/UPDATIQ-App-Icon.jpg
       - name: Set up Java
