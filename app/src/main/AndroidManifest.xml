@@ -3,7 +3,6 @@
     <application
         android:allowBackup="true"
         android:label="UPDATIQ"
-        android:icon="@drawable/UPDATIQ-App-Icon"
         android:theme="@android:style/Theme.Material.NoActionBar"
         android:usesCleartextTraffic="false">
         <activity
