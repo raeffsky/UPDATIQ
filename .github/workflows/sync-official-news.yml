@@ -16,17 +16,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Fetch and parse official MOONTON news
+      - name: Download official MOONTON news with retries
+        run: |
+          curl --fail --location --silent --show-error --retry 5 --retry-all-errors --retry-delay 2 --connect-timeout 15 --max-time 60 -A "UPDATIQ-NewsBot/1.0" "https://en.moonton.com/news/index.html" -o /tmp/moonton-news.html
+          test -s /tmp/moonton-news.html
+          grep -q '/news/[0-9][0-9]*\.html' /tmp/moonton-news.html
+      - name: Parse official MOONTON news
         run: |
           python3 - <<'PY'
-          import json, re, urllib.request, html
+          import json, re, html
           from html.parser import HTMLParser
           from datetime import datetime, timezone
           from pathlib import Path
           URL = "https://en.moonton.com/news/index.html"
-          req = urllib.request.Request(URL, headers={"User-Agent":"UPDATIQ-NewsBot/1.0 (official news link aggregator)"})
-          with urllib.request.urlopen(req, timeout=25) as response:
-              page = response.read().decode("utf-8", "replace")
+          page = Path("/tmp/moonton-news.html").read_text(encoding="utf-8", errors="replace")
           class NewsParser(HTMLParser):
               def __init__(self):
                   super().__init__(); self.items=[]; self.current=None; self.capture=None; self.buf=[]
