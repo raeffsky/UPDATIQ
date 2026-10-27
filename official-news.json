@@ -1,0 +1,9 @@
+{
+  "source": {
+    "name": "MOONTON Games",
+    "url": "https://en.moonton.com/news/index.html",
+    "checkedAt": null,
+    "intervalMinutes": 30
+  },
+  "articles": []
+}
