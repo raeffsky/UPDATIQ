@@ -11,6 +11,19 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Fetch current MLBB hero portraits
+        continue-on-error: true
+        run: |
+          git clone --depth 1 https://github.com/warungerik/MLBB-Hero-Scraper.git /tmp/mlbb-hero-scraper
+          node /tmp/mlbb-hero-scraper/scraper.js
+          mkdir -p app/src/main/assets/hero-images
+          for pair in "Layla:Лейла" "Fanny:Фанни" "Chou:Чу" "Kagura:Кагура" "Tigreal:Тигрил" "Zilong:Зилонг" "Miya:Мия" "Hayabusa:Хаябуса" "Estes:Эстес"; do
+            en="${pair%%:*}"
+            ru="${pair#*:}"
+            if [ -f "/tmp/mlbb-hero-scraper/heroes/$en/icon.png" ]; then
+              cp "/tmp/mlbb-hero-scraper/heroes/$en/icon.png" "app/src/main/assets/hero-images/$en.png"
+            fi
+          done
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
