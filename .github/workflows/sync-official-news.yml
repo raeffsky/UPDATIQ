@@ -55,7 +55,8 @@ jobs:
           Path("official-news.json").write_text(json.dumps(out,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
           print("Collected",len(articles),"official articles")
           print("Articles with images:",sum(bool(a["image"]) for a in articles))
-          PY      - name: Commit updated feed
+          PY
+      - name: Commit updated feed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
