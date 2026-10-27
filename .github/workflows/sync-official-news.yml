@@ -29,30 +29,48 @@ jobs:
           from pathlib import Path
           URL = "https://en.moonton.com/news/index.html"
           page = Path("/tmp/moonton-news.html").read_text(encoding="utf-8", errors="replace")
-          def text_for(block, cls):
-              m = re.search(r"<div[^>]*class=[\"'][^\"']*\b" + re.escape(cls) + r"\b[^\"']*[\"'][^>]*>(.*?)</div>", block, re.S | re.I)
-              if not m: return ""
-              value = re.sub(r'<[^>]+>', ' ', m.group(1))
-              return " ".join(html.unescape(value).split())
+          # Parse each list item independently; tolerate relative links and markup variations.
           unique = {}
-          for li in re.findall(r"<li\b[^>]*>(.*?)</li>", page, re.S | re.I):
-              link = re.search(r"<a[^>]+href=[\"'](https://en\.moonton\.com/news/\d+\.html)[\"']", li, re.I)
-              if not link: continue
+          blocks = re.findall(r"<li\\b[^>]*>(.*?)</li>", page, re.S | re.I)
+          print("List items found:", len(blocks))
+          for block in blocks:
+              link = re.search(r"""href=["']([^"']*/news/\\d+\\.html(?:\\?[^"']*)?)["']""", block, re.I)
+              if not link:
+                  continue
               url = link.group(1)
-              title = text_for(li, "t")
-              if not title: continue
-              date = text_for(li, "d")
-              summary = text_for(li, "c")
-              img = re.search(r"<div[^>]*class=[\"'][^\"']*\bimg\b[^\"']*[\"'][^>]*>.*?<img[^>]+src=[\"']([^\"']+)[\"']", li, re.S | re.I)
+              if url.startswith("/"):
+                  url = "https://en.moonton.com" + url
+              elif url.startswith("//"):
+                  url = "https:" + url
+              elif not url.startswith("http"):
+                  url = "https://en.moonton.com/" + url.lstrip("/")
+              url = url.split("?", 1)[0]
+              def get_text(cls):
+                  m = re.search(r"""<div[^>]*class=["'][^"']*\\b""" + re.escape(cls) + r"""\\b[^"']*["'][^>]*>(.*?)</div>""", block, re.S | re.I)
+                  if not m:
+                      return ""
+                  value = re.sub(r"<[^>]+>", " ", m.group(1))
+                  return " ".join(html.unescape(value).split())
+              title = get_text("t")
+              if not title:
+                  # Fallback: use the first meaningful heading/text block.
+                  title = get_text("title") or get_text("news-title")
+              if not title:
+                  continue
+              date = get_text("d")
+              summary = get_text("c")
+              img = re.search(r"""<img[^>]+(?:src|data-src)=["']([^"']+)["']""", block, re.S | re.I)
               image = img.group(1) if img else ""
               if image.startswith("//"): image = "https:" + image
               elif image.startswith("/"): image = "https://en.moonton.com" + image
               unique[url] = {"id":url.rsplit("/",1)[-1].replace(".html",""),"title":title,"publishedAt":date,"summary":summary,"url":url,"image":image,"source":"MOONTON Games","language":"en","category":"official"}
           articles = sorted(unique.values(), key=lambda a:a.get("publishedAt",""), reverse=True)[:60]
+          print("Article links with titles:", len(articles))
           if not articles:
+              print("HTML sample:", re.sub(r"\\s+", " ", page[:1000]))
               raise SystemExit("No official news extracted; refusing to overwrite last known data.")
           out = {"source":{"name":"MOONTON Games","url":URL,"checkedAt":datetime.now(timezone.utc).isoformat(),"intervalMinutes":30},"articles":articles}
-          Path("official-news.json").write_text(json.dumps(out,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+          Path("official-news.json").write_text(json.dumps(out,ensure_ascii=False,indent=2)+"\\n",encoding="utf-8")
           print("Collected",len(articles),"official articles")
           print("Articles with images:",sum(bool(a["image"]) for a in articles))
           PY
