@@ -29,6 +29,41 @@ def clean_text(node):
             lines.append(text)
     return "\n\n".join(lines)
 
+def translate_to_russian(text, session):
+    """Translate complete article text in bounded chunks while preserving all figures."""
+    chunks = []
+    current = ""
+    # Split on paragraph boundaries so each request remains comfortably below URL limits.
+    for paragraph in text.split("\\n\\n"):
+        paragraph = paragraph.strip()
+        if not paragraph:
+            continue
+        if len(current) + len(paragraph) + 2 > 3000 and current:
+            chunks.append(current)
+            current = ""
+        current = (current + "\\n\\n" + paragraph).strip()
+    if current:
+        chunks.append(current)
+
+    translated = []
+    endpoint = "https://translate.googleapis.com/translate_a/single"
+    for chunk in chunks:
+        response = session.get(endpoint, params={
+            "client": "gtx", "sl": "en", "tl": "ru", "dt": "t", "q": chunk
+        }, timeout=45)
+        response.raise_for_status()
+        payload = response.json()
+        if not isinstance(payload, list) or not payload or not isinstance(payload[0], list):
+            raise RuntimeError("Translation service returned an unexpected response.")
+        translated_chunk = "".join(
+            part[0] for part in payload[0]
+            if isinstance(part, list) and part and isinstance(part[0], str)
+        )
+        if not translated_chunk.strip():
+            raise RuntimeError("Translation service returned an empty translation.")
+        translated.append(translated_chunk)
+    return "\\n\\n".join(translated)
+
 def main():
     session = requests.Session()
     session.headers.update(HEADERS)
@@ -66,17 +101,23 @@ def main():
         title = f"MLBB Patch Notes {version}"
         date_match = re.search(r"(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},?\s+20\d{2}", page.text, re.I)
         date = date_match.group(0) if date_match else datetime.now(timezone.utc).strftime("%Y-%m-%d")
+        try:
+            body_ru = translate_to_russian(body, session)
+        except Exception as exc:
+            raise RuntimeError(f"Russian translation failed for patch {version}; refusing to publish English-only patch notes: {exc}") from exc
         patches.append({
             "id": f"mlbb-patch-{version}",
             "title": title,
             "titleRu": f"Патчноуты MLBB {version}",
             "publishedAt": date,
-            "summary": f"Original-server patch notes {version}. Detailed hero, equipment, and battlefield changes; see source for the complete article.",
-            "summaryRu": f"Патчноуты основного сервера {version}: подробные изменения героев, экипировки и поля боя.",
+            "summary": f"Original-server patch notes {version}.",
+            "summaryRu": f"Полные патчноуты основного сервера MLBB {version}: изменения героев, экипировки и поля боя.",
             "fullText": body,
+            "fullTextRu": body_ru,
             "url": url,
-            "source": "MLBBHub (patch-note archive)",
-            "language": "en",
+            "source": "MLBBHub (подробный архив патчноутов)",
+            "language": "ru",
+            "originalLanguage": "en",
             "category": "update",
             "patchVersion": version
         })
