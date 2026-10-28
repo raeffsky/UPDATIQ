@@ -1,0 +1,124 @@
+#!/usr/bin/env python3
+"""Fetch current MLBB ranked hero statistics and prepare offline tier-list data."""
+import json
+import re
+import sys
+import time
+import urllib.error
+import urllib.parse
+import urllib.request
+from pathlib import Path
+
+BASES = [
+    "https://arena.fastapicloud.dev/api",
+    "https://arena.rone.dev/api",
+]
+OUT = Path("mlbbnexus-tiers.json")
+LANES = {"exp": "exp", "jungle": "jungle", "mid": "mid", "gold": "gold", "roam": "roam"}
+LANE_ALIASES = {
+    "exp": "exp", "exp lane": "exp", "experience": "exp",
+    "jungle": "jungle", "jungler": "jungle",
+    "mid": "mid", "mid lane": "mid",
+    "gold": "gold", "gold lane": "gold",
+    "roam": "roam", "roamer": "roam",
+}
+
+def get_json(path, params):
+    query = urllib.parse.urlencode(params, doseq=True)
+    last_error = None
+    for base in BASES:
+        url = f"{base}{path}?{query}"
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": "UPDATIQ/0.1 (MLBB stats sync)", "Accept": "application/json"})
+            with urllib.request.urlopen(req, timeout=25) as response:
+                data = json.loads(response.read().decode("utf-8"))
+            if data.get("code", 0) != 0:
+                raise RuntimeError(f"API returned code {data.get('code')}: {data.get('message')}")
+            return data.get("data", {})
+        except Exception as exc:
+            last_error = exc
+    raise RuntimeError(f"Could not fetch {path} from either API host: {last_error}")
+
+def records(payload):
+    value = payload.get("records", [])
+    return value if isinstance(value, list) else []
+
+def slugify(value):
+    value = str(value or "").lower().strip()
+    value = re.sub(r"[^a-z0-9]+", "-", value)
+    return value.strip("-")
+
+def lane_names(hero_record):
+    hero = ((hero_record.get("data") or {}).get("hero") or {}).get("data") or {}
+    result = set()
+    for entry in hero.get("roadsort") or []:
+        data = entry.get("data") or {}
+        title = str(data.get("road_sort_title") or entry.get("caption") or "").strip().lower()
+        key = LANE_ALIASES.get(title)
+        if key:
+            result.add(key)
+    return result
+
+def main():
+    stats = get_json("/heroes/rank", {"days": "7", "rank": "all", "sort_field": "win_rate", "sort_order": "desc", "size": 200, "index": 1, "lang": "en"})
+    position_data = get_json("/heroes/positions", {"size": 200, "index": 1, "order": "asc", "lang": "en"})
+    stats_rows = records(stats)
+    position_rows = records(position_data)
+    if not stats_rows:
+        raise RuntimeError("Rank endpoint returned zero heroes; refusing to ship an empty tier list.")
+
+    positions = {}
+    for row in position_rows:
+        data = row.get("data") or {}
+        hero = ((data.get("hero") or {}).get("data") or {})
+        name = hero.get("name")
+        if name:
+            positions[str(name).casefold()] = lane_names(row)
+
+    heroes = []
+    for row in stats_rows:
+        data = row.get("data") or {}
+        hero = ((data.get("main_hero") or {}).get("data") or {})
+        name = hero.get("name")
+        if not name:
+            continue
+        win = data.get("main_hero_win_rate")
+        pick = data.get("main_hero_appearance_rate")
+        ban = data.get("main_hero_ban_rate")
+        hero_obj = {
+            "name": str(name),
+            "slug": slugify(name),
+            "image": hero.get("head") or "",
+            "winRate": round(float(win) * 100, 2) if win is not None else None,
+            "pickRate": round(float(pick) * 100, 3) if pick is not None else None,
+            "banRate": round(float(ban) * 100, 2) if ban is not None else None,
+            "tier": "B",
+            "lanes": sorted(positions.get(str(name).casefold(), set())),
+        }
+        heroes.append(hero_obj)
+
+    if not heroes:
+        raise RuntimeError("Rank endpoint returned records but none had hero names.")
+
+    lanes = {"all": {"heroes": heroes}}
+    for lane in LANES:
+        lane_heroes = [dict(h) for h in heroes if lane in h["lanes"]]
+        lanes[lane] = {"heroes": lane_heroes}
+
+    for lane_data in lanes.values():
+        ranked = sorted(lane_data["heroes"], key=lambda h: h["winRate"] if h["winRate"] is not None else -1, reverse=True)
+        n = len(ranked)
+        for i, hero in enumerate(ranked):
+            ratio = i / max(n, 1)
+            hero["tier"] = "S" if ratio < .10 else "A" if ratio < .30 else "B" if ratio < .70 else "C" if ratio < .90 else "D"
+
+    output = {"source": "Rone Arena API", "updatedAt": int(time.time()), "days": 7, "rank": "all", "lanes": lanes}
+    OUT.write_text(json.dumps(output, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
+    print("Synced MLBB stats:", len(heroes), "heroes;", {k: len(v["heroes"]) for k, v in lanes.items()})
+
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
+        sys.exit(1)
