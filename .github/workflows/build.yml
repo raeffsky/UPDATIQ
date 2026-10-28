@@ -173,6 +173,8 @@ jobs:
           )
           print("Embedded official articles:", len(data.get("articles", [])), "cached images:", sum(1 for v in cache.values() if v.startswith("news-images/")))
           PY
+      - name: Sync live MLBB ranked statistics
+        run: python3 scripts/sync_mlbb_tiers.py
       - name: Embed MLBB Nexus tier data for offline WebView access
         run: |
           python3 - <<'PY'
@@ -185,7 +187,7 @@ jobs:
                   "window.UPDATIQ_MLBBNEXUS_TIERS = " + json.dumps(data, ensure_ascii=False, separators=(",", ":")) + ";\n",
                   encoding="utf-8"
               )
-              print("Embedded MLBB Nexus lane lists:", {k: v.get("count", 0) for k, v in data.get("lanes", {}).items()})
+              print("Embedded ranked hero lists:", {k: len(v.get("heroes", [])) for k, v in data.get("lanes", {}).items()})
           else:
               Path("app/src/main/assets/tier-data.js").write_text("window.UPDATIQ_MLBBNEXUS_TIERS = null;\n", encoding="utf-8")
               print("No synced tier data yet; app will show an unavailable-data state.")
