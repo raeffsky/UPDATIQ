@@ -4,7 +4,8 @@
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="theme-color" content="#070c1a">
 <title>UPDATIQ · The Pulse of MLBB</title>
-<script src="hero-skills.js">
+<script src="hero-skills.js"></script>
+<script>
 async function checkAppUpdate(){const status=document.getElementById('updateStatus');if(status)status.textContent='Проверяем доступную версию…';if(!window.AndroidUpdater||!AndroidUpdater.checkAndInstall){if(status)status.textContent='Обновление доступно только в установленной Android-версии приложения.';return;}AndroidUpdater.checkAndInstall();}
 </script>
 <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
