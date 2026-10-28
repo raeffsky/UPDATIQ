@@ -112,7 +112,7 @@ def main():
             ratio = i / max(n, 1)
             hero["tier"] = "S" if ratio < .10 else "A" if ratio < .30 else "B" if ratio < .70 else "C" if ratio < .90 else "D"
 
-    output = {"source": "Rone Arena API", "updatedAt": int(time.time()), "days": 7, "rank": "all", "lanes": lanes}
+    output = {"source": "Rone Arena API", "updatedAt": int(time.time() * 1000), "days": 7, "rank": "all", "lanes": lanes}
     OUT.write_text(json.dumps(output, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
     print("Synced MLBB stats:", len(heroes), "heroes;", {k: len(v["heroes"]) for k, v in lanes.items()})
 
