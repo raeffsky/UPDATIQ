@@ -65,8 +65,10 @@ def get_json(path, params):
     raise RuntimeError(f"Could not fetch {path} from either API host: {last_error}")
 
 def records(payload):
+    if not isinstance(payload, dict):
+        return []
     value = payload.get("records", [])
-    return value if isinstance(value, list) else []
+    return [row for row in value if isinstance(row, dict)] if isinstance(value, list) else []
 
 def slugify(value):
     value = str(value or "").lower().strip()
@@ -74,11 +76,29 @@ def slugify(value):
     return value.strip("-")
 
 def lane_names(hero_record):
-    hero = ((hero_record.get("data") or {}).get("hero") or {}).get("data") or {}
+    if not isinstance(hero_record, dict):
+        return set()
+    record_data = hero_record.get("data") or {}
+    if not isinstance(record_data, dict):
+        return set()
+    hero_obj = record_data.get("hero") or {}
+    if not isinstance(hero_obj, dict):
+        return set()
+    hero = hero_obj.get("data") or {}
+    if not isinstance(hero, dict):
+        return set()
     result = set()
-    for entry in hero.get("roadsort") or []:
-        data = entry.get("data") or {}
-        title = str(data.get("road_sort_title") or entry.get("caption") or "").strip().lower()
+    roadsort = hero.get("roadsort") or []
+    if not isinstance(roadsort, list):
+        roadsort = [roadsort]
+    for entry in roadsort:
+        if isinstance(entry, dict):
+            lane_data = entry.get("data") or {}
+            if not isinstance(lane_data, dict):
+                lane_data = {}
+            title = str(lane_data.get("road_sort_title") or entry.get("caption") or "").strip().lower()
+        else:
+            title = str(entry or "").strip().lower()
         key = LANE_ALIASES.get(title)
         if key:
             result.add(key)
