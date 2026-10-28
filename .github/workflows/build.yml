@@ -167,8 +167,8 @@ jobs:
           from pathlib import Path
           import re
           html = Path("app/src/main/assets/index.html").read_text(encoding="utf-8")
-          scripts = re.findall(r"<script(?![^>]*\\bsrc=)[^>]*>(.*?)</script>", html, re.S | re.I)
-          Path("/tmp/updatiq-inline.js").write_text("\\n;\\n".join(scripts), encoding="utf-8")
+          scripts = re.findall(r"<script(?![^>]*\bsrc=)[^>]*>(.*?)</script>", html, re.S | re.I)
+          Path("/tmp/updatiq-inline.js").write_text("\n;\n".join(scripts), encoding="utf-8")
           print("Extracted inline script blocks:", len(scripts))
           PY
           node --check /tmp/updatiq-inline.js
