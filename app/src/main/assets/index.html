@@ -198,7 +198,7 @@ function renderTiers(){
    return '<div class="tierrow"><div class="tierlabel '+t.toLowerCase()+'">'+t+'</div><div class="heroes">'+(content||'<span class="demo-empty">Нет героев в этом тире</span>')+'</div></div>';
  }).join("");
  const stamp=document.getElementById("tierDataStamp");
- if(stamp)stamp.textContent="Источник: MLBB Nexus · Все ранги · 7 дней · обновлено "+new Date(live.updatedAt).toLocaleString("ru-RU");
+ if(stamp)stamp.textContent="Источник: Rone Arena API · Все ранги · 7 дней · обновлено "+new Date(live.updatedAt).toLocaleString("ru-RU");
 }
 function selectTierMode(btn,mode){tierMode=mode;btn.parentElement.querySelectorAll("button").forEach(x=>x.classList.toggle("active",x===btn));document.getElementById("tierMetricControls").style.display=mode==="stats"?"flex":"none";renderTiers()}function selectTierMetric(btn,metric){tierMetric=metric;btn.parentElement.querySelectorAll("button").forEach(x=>x.classList.toggle("active",x===btn));renderTiers()}function selectRole(btn,role){tierRole=role;btn.parentElement.querySelectorAll("button").forEach(x=>x.classList.toggle("active",x===btn));renderTiers()}
 function openTierSource(url){if(!url)return;if(window.AndroidExternal&&typeof window.AndroidExternal.open==="function"){window.AndroidExternal.open(String(url));return}window.open(url,"_blank")}
