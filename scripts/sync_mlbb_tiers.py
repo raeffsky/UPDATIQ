@@ -31,10 +31,35 @@ def get_json(path, params):
         try:
             req = urllib.request.Request(url, headers={"User-Agent": "UPDATIQ/0.1 (MLBB stats sync)", "Accept": "application/json"})
             with urllib.request.urlopen(req, timeout=25) as response:
-                data = json.loads(response.read().decode("utf-8"))
-            if data.get("code", 0) != 0:
-                raise RuntimeError(f"API returned code {data.get('code')}: {data.get('message')}")
-            return data.get("data", {})
+                raw = response.read().decode("utf-8")
+            try:
+                data = json.loads(raw)
+            except json.JSONDecodeError as exc:
+                raise RuntimeError(f"API returned invalid JSON from {base}{path}: {raw[:180]!r}") from exc
+
+            # Some API gateways wrap the payload as a JSON string instead of an object.
+            if isinstance(data, str):
+                try:
+                    data = json.loads(data)
+                except json.JSONDecodeError:
+                    raise RuntimeError(f"API returned a text payload from {base}{path}: {data[:180]!r}")
+
+            if not isinstance(data, dict):
+                raise RuntimeError(f"API returned {type(data).__name__}, expected an object, from {base}{path}")
+
+            code = data.get("code", 0)
+            if str(code) not in ("0", "200", "None"):
+                raise RuntimeError(f"API returned code {code}: {data.get('message', data.get('msg', 'no message'))}")
+
+            payload = data.get("data", data)
+            if isinstance(payload, str):
+                try:
+                    payload = json.loads(payload)
+                except json.JSONDecodeError:
+                    raise RuntimeError(f"API data field is text, not JSON, from {base}{path}: {payload[:180]!r}")
+            if not isinstance(payload, dict):
+                raise RuntimeError(f"API data field is {type(payload).__name__}, expected an object, from {base}{path}")
+            return payload
         except Exception as exc:
             last_error = exc
     raise RuntimeError(f"Could not fetch {path} from either API host: {last_error}")
