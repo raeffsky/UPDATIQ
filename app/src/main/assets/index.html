@@ -29,7 +29,29 @@ async function checkAppUpdate(){const status=document.getElementById('updateStat
 .profile-tabs button.active { box-shadow: inset 0 0 0 1px rgba(132, 190, 255, .18), inset 0 0 14px rgba(50, 130, 246, .22) !important; }
 .subtabs button.active { box-shadow: inset 0 0 0 1px rgba(132, 190, 255, .18), inset 0 0 12px rgba(50, 130, 246, .18) !important; }
 .nav.active { box-shadow: none !important; }
-.more-heading{margin:4px 0 22px}.more-heading h2{font-size:28px;margin:7px 0 4px}.more-heading p{margin:0;color:var(--muted);font-size:12px}.more-group{margin-bottom:22px}.more-group-title{font-size:9px;letter-spacing:1.5px;font-weight:850;color:#7185a5;margin:0 0 9px 4px}.more-list{border:1px solid var(--line);border-radius:18px;background:linear-gradient(135deg,#111d31,#0a1221);overflow:hidden}.more-row{width:100%;display:flex;align-items:center;gap:12px;text-align:left;padding:12px;background:transparent;min-height:70px}.more-row+.more-row{border-top:1px solid rgba(45,64,94,.65)}.more-icon{width:42px;height:42px;flex:0 0 42px;border-radius:13px;display:grid;place-items:center;border:1px solid #6e91c333}.more-icon iconify-icon{width:22px;height:22px}.more-icon.blue{background:linear-gradient(145deg,#1c3b64,#15213b);color:#79b8ff}.more-icon.purple{background:linear-gradient(145deg,#302750,#1c1d38);color:#c2a4ff}.more-icon.green{background:linear-gradient(145deg,#173b38,#13272e);color:#6ce0bd}.more-icon.orange{background:linear-gradient(145deg,#3d3025,#272234);color:#ffc08b}.more-copy{display:flex;flex:1;min-width:0;flex-direction:column;gap:5px}.more-copy strong,.more-update-info strong{font-size:13px;font-weight:750}.more-copy small,.more-update-info small{font-size:10px;line-height:1.45;color:var(--muted)}.more-arrow{width:17px;color:#7185a5}.version-pill{font-size:10px;font-weight:800;color:#91bfff;background:#1a2d49;border:1px solid #2b456b;border-radius:8px;padding:6px 8px}.more-update{padding:14px;border:1px solid #29466b;border-radius:18px;background:linear-gradient(120deg,#122440,#11172b 75%,#211b3c);margin-bottom:8px}.more-source-card{display:flex;align-items:center;gap:10px;margin-top:14px;padding:12px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(120deg,#101b30,#0b1323)}.more-source-icon{width:38px;height:38px;display:grid;place-items:center;flex-shrink:0;border-radius:11px;background:#172b4a;color:#5dd8ff;font-size:20px}.more-source-copy{display:flex;flex:1;min-width:0;flex-direction:column;gap:4px}.more-source-copy strong{font-size:12px}.more-source-copy small{font-size:10px;color:var(--muted)}.more-source-card .primary{padding:9px 10px;font-size:10px;white-space:nowrap}.more-update-info{display:flex;align-items:center;gap:11px;margin-bottom:13px}.more-update-info>span:last-child{display:flex;flex-direction:column;gap:4px}.more-update-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:12px}.more-panel{margin-top:12px;padding:15px;border:1px solid var(--line);border-radius:16px;background:#0d1729;color:var(--muted);font-size:12px;line-height:1.6}.more-panel h3{margin:0 0 8px;color:var(--text);font-size:15px}.more-panel button{margin-top:8px}</style>
+.more-heading{margin:4px 0 22px}.more-heading h2{font-size:28px;margin:7px 0 4px}.more-heading p{margin:0;color:var(--muted);font-size:12px}.more-group{margin-bottom:22px}.more-group-title{font-size:9px;letter-spacing:1.5px;font-weight:850;color:#7185a5;margin:0 0 9px 4px}.more-list{border:1px solid var(--line);border-radius:18px;background:linear-gradient(135deg,#111d31,#0a1221);overflow:hidden}.more-row{width:100%;display:flex;align-items:center;gap:12px;text-align:left;padding:12px;background:transparent;min-height:70px}.more-row+.more-row{border-top:1px solid rgba(45,64,94,.65)}.more-icon{width:42px;height:42px;flex:0 0 42px;border-radius:13px;display:grid;place-items:center;border:1px solid #6e91c333}.more-icon iconify-icon{width:22px;height:22px}.more-icon.blue{background:linear-gradient(145deg,#1c3b64,#15213b);color:#79b8ff}.more-icon.purple{background:linear-gradient(145deg,#302750,#1c1d38);color:#c2a4ff}.more-icon.green{background:linear-gradient(145deg,#173b38,#13272e);color:#6ce0bd}.more-icon.orange{background:linear-gradient(145deg,#3d3025,#272234);color:#ffc08b}.more-copy{display:flex;flex:1;min-width:0;flex-direction:column;gap:5px}.more-copy strong,.more-update-info strong{font-size:13px;font-weight:750}.more-copy small,.more-update-info small{font-size:10px;line-height:1.45;color:var(--muted)}.more-arrow{width:17px;color:#7185a5}.version-pill{font-size:10px;font-weight:800;color:#91bfff;background:#1a2d49;border:1px solid #2b456b;border-radius:8px;padding:6px 8px}.more-update{padding:14px;border:1px solid #29466b;border-radius:18px;background:linear-gradient(120deg,#122440,#11172b 75%,#211b3c);margin-bottom:8px}.more-source-card{display:flex;align-items:center;gap:10px;margin-top:14px;padding:12px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(120deg,#101b30,#0b1323)}.more-source-icon{width:38px;height:38px;display:grid;place-items:center;flex-shrink:0;border-radius:11px;background:#172b4a;color:#5dd8ff;font-size:20px}.more-source-copy{display:flex;flex:1;min-width:0;flex-direction:column;gap:4px}.more-source-copy strong{font-size:12px}.more-source-copy small{font-size:10px;color:var(--muted)}.more-source-card .primary{padding:9px 10px;font-size:10px;white-space:nowrap}.more-update-info{display:flex;align-items:center;gap:11px;margin-bottom:13px}.more-update-info>span:last-child{display:flex;flex-direction:column;gap:4px}.more-update-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:12px}.more-panel{margin-top:12px;padding:15px;border:1px solid var(--line);border-radius:16px;background:#0d1729;color:var(--muted);font-size:12px;line-height:1.6}.more-panel h3{margin:0 0 8px;color:var(--text);font-size:15px}.more-panel button{margin-top:8px}
+/* UPDATIQ unified native-control and dialog theme */
+:root{color-scheme:dark}
+select,input,textarea{color:var(--text);background-color:#0d1629;border:1px solid #263b5a;border-radius:12px}
+select{appearance:none;-webkit-appearance:none;padding:12px 42px 12px 13px;min-height:44px;background-image:linear-gradient(45deg,transparent 50%,#70cfff 50%),linear-gradient(135deg,#70cfff 50%,transparent 50%);background-position:calc(100% - 17px) 19px,calc(100% - 12px) 19px;background-size:5px 5px,5px 5px;background-repeat:no-repeat}
+input[type=checkbox],input[type=radio]{accent-color:#55c9f4}
+input:focus,textarea:focus,select:focus{outline:none;border-color:#55c9f4;box-shadow:0 0 0 3px #55c9f41c}
+.upd-modal-backdrop{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;padding:22px;background:rgba(2,5,13,.78);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);animation:updModalFade .16s ease}
+.upd-modal{width:min(100%,440px);max-height:min(82dvh,720px);display:flex;flex-direction:column;overflow:hidden;border:1px solid #2c4770;border-radius:20px;background:linear-gradient(155deg,rgba(17,30,52,.99),rgba(8,14,27,.99));box-shadow:0 22px 70px #0009,0 0 35px #3282f61c;animation:updModalIn .18s ease}
+.upd-modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 18px 14px;border-bottom:1px solid #243753}
+.upd-modal-title{font-size:17px;font-weight:850;letter-spacing:.1px;color:#f1f5ff}
+.upd-modal-close{width:34px;height:34px;flex-shrink:0;border:1px solid #2a3e5d;border-radius:10px;background:#101d32;color:#a9c0e1;font-size:21px;line-height:1}
+.upd-modal-options{overflow-y:auto;overscroll-behavior:contain;padding:7px;scrollbar-width:thin;scrollbar-color:#2d4d78 transparent}
+.upd-modal-option{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;min-height:49px;padding:13px 12px;text-align:left;border:1px solid transparent;border-radius:12px;background:transparent;color:#c5d4eb;font:inherit;font-size:14px}
+.upd-modal-option+.upd-modal-option{margin-top:3px}
+.upd-modal-option:active{background:#142746}
+.upd-modal-option.selected{color:#e8f8ff;border-color:#2d6a98;background:linear-gradient(100deg,#14304b,#182343)}
+.upd-modal-option.selected:after{content:"";width:9px;height:9px;flex-shrink:0;border-radius:50%;background:#5dd8ff;box-shadow:0 0 0 4px #5dd8ff20,0 0 12px #5dd8ff80}
+.upd-modal-option:not(.selected):after{content:"";width:9px;height:9px;flex-shrink:0;border:1px solid #536987;border-radius:50%}
+.upd-modal-option:disabled{opacity:.4}
+@keyframes updModalFade{from{opacity:0}to{opacity:1}}@keyframes updModalIn{from{opacity:.7;transform:translateY(8px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media(prefers-reduced-motion:reduce){.upd-modal-backdrop,.upd-modal{animation:none}}
+</style>
 </head>
 <body><div id="startup-splash" role="status" aria-label="Загрузка UPDATIQ"><img class="splash-brand-icon" src="UPDATIQ-U-transparent.webp" alt="UPDATIQ"><div class="splash-name">UPDATIQ</div><div class="splash-tagline">БУДЬ НА ШАГ ВПЕРЕДИ</div><div class="splash-progress"></div><div class="splash-caption">Подготовка приложения…</div></div><script>(function(){var s=document.getElementById("startup-splash");if(s){setTimeout(function(){s.classList.add("splash-done")},1800);window.addEventListener("error",function(){s.classList.add("splash-done")});window.addEventListener("unhandledrejection",function(){s.classList.add("splash-done")})}})();</script><main class="app">
 <header class="top"><div class="brand"><div class="logo"><img src="UPDATIQ-U-transparent.webp" alt="UPDATIQ"></div><div><div class="wordmark">UPDATIQ</div></div></div><button class="iconbtn" aria-label="Уведомления" onclick="toast('Уведомления появятся после подключения сервера')"><iconify-icon icon="tabler:bell" aria-hidden="true"></iconify-icon></button></header>
@@ -152,6 +174,65 @@ const coachData={match:['Подготовка к матчу',['Проверь с
 function openCoachTool(k){const p=document.getElementById('coachToolPanel'),d=coachData[k];if(!p||!d)return;let h='<div class="sectionhead"><h3>'+d[0]+'</h3><button class="linkbtn" onclick="document.getElementById(\'coachToolPanel\').innerHTML=\'\'">Закрыть</button></div><div class="demo-card">';if(k==='situations'){h+='<label>Ситуация<select id="coachScenario" class="searchbox" style="width:100%;margin-top:8px"><option value="missing">Враги пропали с карты</option><option value="behind">Команда отстаёт по золоту</option><option value="lord">Скоро появится Лорд</option><option value="tower">Союзник атакует без поддержки</option></select></label><button class="primary" style="margin-top:12px" onclick="showCoachScenario()">Разобрать</button><div id="coachScenarioAnswer"></div>';}else if(k==='progress'){let c=[];try{c=JSON.parse(localStorage.getItem('updat iq_coach_checks')||'[]')}catch(e){}h+='<div style="display:grid;gap:12px">'+d[1].map((x,i)=>'<label><input type="checkbox" '+(c.includes(i)?'checked':'')+' onchange="toggleCoachCheck('+i+',this.checked)"> '+x+'</label>').join('')+'</div><p class="smallnote" id="coachProgressCount">'+c.length+' из '+d[1].length+' целей выполнено</p>';}else{h+='<ul style="padding-left:20px;display:grid;gap:10px">'+d[1].map(x=>'<li>'+x+'</li>').join('')+'</ul><p class="smallnote">Роль: '+document.getElementById('coachRole').value+'. Советы общие и зависят от ситуации и текущего патча.</p>';}p.innerHTML=h+'</div>';p.scrollIntoView({behavior:'smooth',block:'start'});}
 function showCoachScenario(){const k=document.getElementById('coachScenario').value,a={missing:'Не заходи в кусты один. Отступи в безопасную позицию, проверь мини-карту и предупреди команду.',behind:'Собирай безопасные ресурсы, защищай волны и избегай боёв без преимущества по позиции.',lord:'Соберитесь заранее, проверьте видимость врагов и подготовьте контроль. Не идите к объекту по одному.',tower:'Оцени численное преимущество, доступность ультимейтов и путь отхода. Не присоединяйся автоматически.'},t={missing:'Враги пропали с карты',behind:'Отставание по золоту',lord:'Подготовка к Лорду',tower:'Союзник атакует без поддержки'};document.getElementById('coachScenarioAnswer').innerHTML='<h4>'+t[k]+'</h4><p>'+a[k]+'</p><small class="smallnote">Учитывай составы и состояние матча.</small>';}
 function saveCoachProfile(){const p={rank:document.getElementById('coachRank')?.value||'Эпик',role:document.getElementById('coachRole')?.value||'Лес'};try{localStorage.setItem('updat iq_coach_profile',JSON.stringify(p))}catch(e){}}function loadCoachProfile(){try{const p=JSON.parse(localStorage.getItem('updat iq_coach_profile')||'null');if(!p)return;const r=document.getElementById('coachRank'),l=document.getElementById('coachRole');if(r&&[...r.options].some(o=>o.value===p.rank||o.text===p.rank))r.value=p.rank;if(l&&[...l.options].some(o=>o.value===p.role||o.text===p.role))l.value=p.role}catch(e){}}function toggleCoachCheck(i,on){let c=[];try{c=JSON.parse(localStorage.getItem('updat iq_coach_checks')||'[]')}catch(e){}c=on?[...new Set([...c,i])]:c.filter(x=>x!==i);try{localStorage.setItem('updat iq_coach_checks',JSON.stringify(c))}catch(e){}const el=document.getElementById('coachProgressCount');if(el)el.textContent=c.length+' из '+coachData.progress[1].length+' целей выполнено';}
+
+/* Replace Android's bright native select popup with UPDATIQ-styled dialogs. */
+(function(){
+ let activeSelect=null,backdrop=null,previousFocus=null;
+ function closeSelect(restore){
+  if(backdrop){backdrop.remove();backdrop=null}
+  if(activeSelect){activeSelect.removeAttribute('aria-expanded');activeSelect=null}
+  if(restore&&previousFocus&&previousFocus.isConnected){try{previousFocus.focus({preventScroll:true})}catch(e){}}
+  previousFocus=null;
+ }
+ function openSelect(sel){
+  if(!sel||sel.disabled||!sel.options||!sel.options.length)return;
+  closeSelect(false);activeSelect=sel;previousFocus=document.activeElement;
+  sel.setAttribute('aria-expanded','true');
+  backdrop=document.createElement('div');backdrop.className='upd-modal-backdrop';
+  backdrop.setAttribute('role','presentation');
+  const dialog=document.createElement('section');dialog.className='upd-modal';dialog.setAttribute('role','dialog');dialog.setAttribute('aria-modal','true');
+  const head=document.createElement('div');head.className='upd-modal-head';
+  const title=document.createElement('div');title.className='upd-modal-title';
+  const label=sel.labels&&sel.labels.length?sel.labels[0].textContent.trim():'Выберите вариант';
+  title.textContent=(label&&label.length<70?label:'Выберите вариант').replace(/\s+/g,' ');
+  const close=document.createElement('button');close.type='button';close.className='upd-modal-close';close.setAttribute('aria-label','Закрыть');close.textContent='×';
+  close.addEventListener('click',()=>closeSelect(true));head.append(title,close);
+  const list=document.createElement('div');list.className='upd-modal-options';
+  Array.from(sel.options).forEach((opt,index)=>{
+   if(opt.hidden)return;
+   const b=document.createElement('button');b.type='button';b.className='upd-modal-option'+(index===sel.selectedIndex?' selected':'');b.textContent=opt.textContent.trim()||opt.value;b.disabled=opt.disabled||(opt.parentElement&&opt.parentElement.disabled);
+   b.setAttribute('aria-selected',index===sel.selectedIndex?'true':'false');
+   b.addEventListener('click',()=>{
+    if(b.disabled)return;
+    sel.selectedIndex=index;sel.dispatchEvent(new Event('input',{bubbles:true}));sel.dispatchEvent(new Event('change',{bubbles:true}));
+    closeSelect(false);
+   });
+   list.appendChild(b);
+  });
+  dialog.append(head,list);backdrop.appendChild(dialog);
+  backdrop.addEventListener('click',e=>{if(e.target===backdrop)closeSelect(true)});
+  document.body.appendChild(backdrop);
+  const selected=list.querySelector('.selected');if(selected)selected.scrollIntoView({block:'nearest'});
+  close.focus({preventScroll:true});
+ }
+ document.addEventListener('click',function(e){
+  const sel=e.target&&e.target.closest?e.target.closest('select'):null;
+  if(!sel)return;
+  e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();openSelect(sel);
+ },true);
+ document.addEventListener('keydown',function(e){
+  if(!backdrop)return;
+  if(e.key==='Escape'){e.preventDefault();closeSelect(true);return}
+  if(e.key==='Tab'){
+   const focusables=Array.from(backdrop.querySelectorAll('button:not(:disabled)'));
+   if(!focusables.length)return;
+   const first=focusables[0],last=focusables[focusables.length-1];
+   if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}
+   else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}
+  }
+ });
+})();
+
 loadCoachProfile();renderNews();loadOfficialNews();renderHeroes();renderBalance();renderTiers();renderMetaExtras();
 (function(){const splash=document.getElementById("startup-splash");if(!splash)return;const hide=()=>splash.classList.add("splash-done");setTimeout(hide,1300);setTimeout(hide,5000)})();
 </script></body></html>
