@@ -198,7 +198,7 @@ jobs:
           source = Path("mlbb-hero-builds.json")
           data = json.loads(source.read_text(encoding="utf-8")) if source.exists() else {"builds": {}}
           Path("app/src/main/assets/hero-builds.js").write_text(
-              "window.UPDATIQ_HERO_BUILDS = " + json.dumps(data, ensure_ascii=False, separators=(",", ":")) + ";\\n",
+              "window.UPDATIQ_HERO_BUILDS = " + json.dumps(data, ensure_ascii=False, separators=(",", ":")) + ";\n",
               encoding="utf-8"
           )
           print("Embedded current hero builds:", len(data.get("builds", {})))
@@ -214,6 +214,9 @@ jobs:
           print("Extracted inline script blocks:", len(scripts))
           PY
           node --check /tmp/updatiq-inline.js
+          for file in app/src/main/assets/hero-skills.js app/src/main/assets/official-news-data.js app/src/main/assets/tier-data.js app/src/main/assets/hero-builds.js; do
+            if [ -f "$file" ]; then node --check "$file"; fi
+          done
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
