@@ -115,6 +115,11 @@ jobs:
         run: |
           python3 -m pip install --quiet requests beautifulsoup4
           python3 scripts/sync_patch_notes.py
+      - name: Sync public UPDATIQ Telegram channel
+        continue-on-error: true
+        run: |
+          python3 -m pip install --quiet requests beautifulsoup4
+          python3 scripts/sync_telegram_channel.py
       - name: Embed collected official news and download article images
         run: |
           python3 - <<'PY'
