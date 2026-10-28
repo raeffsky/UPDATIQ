@@ -67,6 +67,43 @@ jobs:
           fs.writeFileSync('app/src/main/assets/hero-skills.js', 'window.heroSkillData = ' + JSON.stringify(result) + ';\n');
           console.log('Generated optimized skill data for ' + Object.keys(result).length + ' heroes');
           NODE
+      - name: Download missing tier-list portraits for offline use
+        continue-on-error: true
+        run: |
+          python3 - <<'PY'
+          import json, re, subprocess
+          from pathlib import Path
+          from urllib.request import Request, urlopen
+          data_path = Path("mlbbnexus-tiers.json")
+          out = Path("app/src/main/assets/hero-images")
+          out.mkdir(parents=True, exist_ok=True)
+          if not data_path.exists():
+              print("No tier data file; existing portraits will be used.")
+              raise SystemExit(0)
+          data = json.loads(data_path.read_text(encoding="utf-8"))
+          heroes = {}
+          for lane in data.get("lanes", {}).values():
+              for hero in lane.get("heroes", []):
+                  if hero.get("slug") and hero.get("image"):
+                      heroes[hero["slug"]] = hero["image"]
+          saved = 0
+          for slug, url in heroes.items():
+              target = out / (slug + ".webp")
+              if target.exists() and target.stat().st_size > 1000:
+                  continue
+              try:
+                  req = Request(url, headers={"User-Agent": "Mozilla/5.0 UPDATIQ"})
+                  with urlopen(req, timeout=15) as response:
+                      raw = response.read()
+                  temp = out / (slug + ".download")
+                  temp.write_bytes(raw)
+                  subprocess.run(["cwebp", "-quiet", "-q", "78", "-resize", "256", "0", str(temp), "-o", str(target)], check=True)
+                  temp.unlink(missing_ok=True)
+                  saved += 1
+              except Exception as exc:
+                  print("Portrait skipped", slug, str(exc))
+          print("Tier portraits downloaded:", saved, "of", len(heroes))
+          PY
       - name: Optimize brand assets and remove unused image
         run: |
           cwebp -quiet -q 82 -alpha_q 90 app/src/main/assets/UPDATIQ-U-transparent.png -o app/src/main/assets/UPDATIQ-U-transparent.webp
