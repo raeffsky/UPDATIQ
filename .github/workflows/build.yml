@@ -67,6 +67,13 @@ jobs:
           fs.writeFileSync('app/src/main/assets/hero-skills.js', 'window.heroSkillData = ' + JSON.stringify(result) + ';\n');
           console.log('Generated optimized skill data for ' + Object.keys(result).length + ' heroes');
           NODE
+      - name: Restore Russian skill translation cache
+        uses: actions/cache@v4
+        with:
+          path: app/src/main/assets/hero-skills-ru-cache.json
+          key: hero-skill-ru-${{ runner.os }}-${{ github.run_id }}
+          restore-keys: |
+            hero-skill-ru-${{ runner.os }}-
       - name: Translate all hero skill names and descriptions into Russian
         continue-on-error: true
         run: python3 scripts/translate_hero_skills_ru.py
