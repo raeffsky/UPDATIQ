@@ -2,6 +2,8 @@ package com.updatiq.app;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.content.Intent;
+import android.net.Uri;
 import android.graphics.Color;
 import android.view.View;
 import android.view.Window;
