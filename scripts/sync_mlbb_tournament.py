@@ -30,7 +30,7 @@ class Parser(HTMLParser):
             self.li_depth += 1
             if self.li_depth == 1:
                 self.item = {"heading": self.heading, "href": "", "text": ""}
-        if tag == "a" and self.item is not None and self.li_depth >= 1:
+        if tag == "a" and self.item is not None:
             href = attrs.get("href", "")
             if "/en/heroes/" in href and not self.item["href"]:
                 self.item["href"] = href
@@ -118,7 +118,7 @@ def main():
         hero["name"] = reference.get("name") or hero["name"] or slug.replace("-", " ").title()
         hero["image"] = reference.get("image", "")
         hero["lanes"] = reference.get("lanes", [])
-        hero["rankedSlug"] = reference.get("slug", slug)
+        hero["rankedSlug"] = reference.get("slug", slug)\n        hero["slug"] = reference.get("slug", slug)
         if not hero["proPresence"]:
             # Keep win-rate-only heroes, but make their lack of reliable presence explicit.
             hero["proPresence"] = 0.0
