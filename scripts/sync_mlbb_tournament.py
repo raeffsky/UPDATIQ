@@ -118,7 +118,8 @@ def main():
         hero["name"] = reference.get("name") or hero["name"] or slug.replace("-", " ").title()
         hero["image"] = reference.get("image", "")
         hero["lanes"] = reference.get("lanes", [])
-        hero["rankedSlug"] = reference.get("slug", slug)\n        hero["slug"] = reference.get("slug", slug)
+        hero["rankedSlug"] = reference.get("slug", slug)
+        hero["slug"] = reference.get("slug", slug)
         if not hero["proPresence"]:
             # Keep win-rate-only heroes, but make their lack of reliable presence explicit.
             hero["proPresence"] = 0.0
