@@ -221,7 +221,7 @@ jobs:
           previous_patch_articles = []
           try:
               previous_data = json.loads(Path("official-news.json").read_text(encoding="utf-8"))
-              previous_source = previous_data.get("source", {})
+              previous_source = previous_data.get("source") or {}
               previous_patch_articles = [a for a in previous_data.get("articles", []) if a.get("category") == "update" and a.get("patchVersion")]
           except Exception as exc:
               print("Could not preserve previous patch notes:", str(exc)[:120])
