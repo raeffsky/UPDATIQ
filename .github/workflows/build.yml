@@ -75,6 +75,7 @@ jobs:
           restore-keys: |
             hero-skill-ru-${{ runner.os }}-
       - name: Translate and validate all hero skill text in Russian
+        if: false # Russian localization intentionally skipped per project plan
         run: python3 scripts/translate_hero_skills_ru.py
       - name: Download missing tier-list portraits for offline use
         continue-on-error: true
