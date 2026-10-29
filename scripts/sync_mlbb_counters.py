@@ -73,7 +73,7 @@ def main():
                         if not name:
                             name = re.sub(r"^\\d+\\s*", "", link.get_text(" ", strip=True)).strip()
                         text = li.get_text(" ", strip=True)
-                        edge_match = re.search(r"([+−-]?\\d+(?:\\.\\d+)?)\\s*pp", text, re.I)
+                        edge_match = re.search(r"([+−-]?\d+(?:\.\d+)?)\s*pp", text, re.I)
                         edge = float(edge_match.group(1).replace("−", "-")) if edge_match else None
                         counters.append({
                             "slug": slug,
