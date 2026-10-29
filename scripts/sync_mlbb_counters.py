@@ -50,6 +50,13 @@ def main():
             response.raise_for_status()
             soup = BeautifulSoup(response.text, "html.parser")
             heading = next((h for h in soup.find_all(["h2", "h3"]) if "proven counters" in h.get_text(" ", strip=True).lower()), None)
+            hero_section = soup.find("h1")
+            hero_section = hero_section.find_parent("section") if hero_section else None
+            hero_role = ""
+            if hero_section:
+                role_img = next((img for img in hero_section.find_all("img") if (img.get("alt") or "").lower().endswith(" icon") and "hero icon" not in (img.get("alt") or "").lower()), None)
+                if role_img:
+                    hero_role = role_img.get("alt", "").replace(" icon", "").strip()
             counters = []
             if heading:
                 ul = heading.find_next("ul")
@@ -78,6 +85,7 @@ def main():
             # No guessed or role-based counter recommendations are generated.
             output["heroes"][hero["slug"]] = {
                 "name": hero["name"],
+                "role": hero_role,
                 "sourceUrl": url,
                 "counters": counters
             }
