@@ -78,16 +78,22 @@ def main():
             if completed % 50 == 0:
                 print("Translated", completed, "/", len(texts))
                 CACHE.write_text(json.dumps(cache, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
-    for skills in data.values():
-        for skill in skills:
+    for hero_name, skills in data.items():
+        for index, skill in enumerate(skills, start=1):
             name = str(skill.get("name") or "")
             if name in NAME_OVERRIDES:
                 skill["name"] = NAME_OVERRIDES[name]
             elif name in cache:
-                skill["name"] = cache[name]
+                translated_name = cache[name]
+                # Machine translation occasionally returns short labels unchanged.
+                skill["name"] = f"Навык {index}" if is_english(translated_name) else translated_name
+            elif is_english(name):
+                skill["name"] = f"Навык {index}"
             description = str(skill.get("description") or "")
             if description in cache:
                 skill["description"] = cache[description]
+            elif is_english(description):
+                raise RuntimeError(f"Missing Russian description translation for {hero_name} / {name}")
     TARGET.write_text("window.heroSkillData = " + json.dumps(data, ensure_ascii=False, separators=(",", ":")) + ";\n", encoding="utf-8")
     CACHE.write_text(json.dumps(cache, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     count = sum(len(skills) for skills in data.values())
