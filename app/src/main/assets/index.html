@@ -229,7 +229,7 @@ function renderTiers(){
        const localImage=slug?"hero-images/"+slug+".webp":"";
        const image=h.image?'<img class="tier-portrait" src="'+localImage+'" data-remote="'+h.image+'" alt="" loading="lazy" onerror="if(this.dataset.remote&&this.src!==this.dataset.remote){this.src=this.dataset.remote}else{this.style.display=\'none\';this.nextElementSibling.style.display=\'block\'}"><iconify-icon class="tier-fallback" style="display:none" icon="tabler:shield-question"></iconify-icon>':'<iconify-icon class="tier-fallback" icon="tabler:shield-question"></iconify-icon>';
        const win=h.winRate==null?"—":Number(h.winRate).toFixed(1)+"%";
-       const stats='<small>Присутствие '+Number(h.proPresence||0).toFixed(1)+'% · Победы '+win+'<br>Пик '+(h.picks||0)+' · Бан '+(h.bans||0)+'</small>';
+       const stats='<small>Присутствие '+Number(h.proPresence||0).toFixed(1)+'% · Победы '+win+'<br>Пик '+(h.picks==null?'—':h.picks)+' · Бан '+(h.bans==null?'—':h.bans)+'</small>';
        const safeName=String(h.name||slug).replace(/\\/g,"\\\\").replace(/'/g,"\\'");
        return '<button class="demo-tier-hero" onclick="openTierHero(\''+safeName+'\',\''+slug+'\')">'+image+String(h.name||slug)+stats+'</button>';
      }).join("");
