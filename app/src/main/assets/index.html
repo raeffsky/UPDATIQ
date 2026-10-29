@@ -179,10 +179,15 @@ function renderTiers(){
  const lane=live&&live.lanes&&live.lanes[laneKey];
  const rows=document.getElementById("tierRows");
  const heading=document.getElementById("tierLaneHeading");
- if(!rows||!heading)return;
+ const stamp=document.getElementById("tierDataStamp");
+ if(!rows||!heading){
+   if(stamp)stamp.textContent="Ошибка отображения: не найдены элементы тир-листа";
+   return;
+ }
  if(!lane||!Array.isArray(lane.heroes)||!lane.heroes.length){
-   heading.innerHTML="<h3>"+laneTitles[tierRole]+"</h3><span class=\"tag\">Нет данных</span>";
-   rows.innerHTML='<div class="demo-empty">Данные MLBB Nexus пока недоступны. Последняя успешная версия появится после синхронизации.</div>';
+   heading.innerHTML="<h3>"+(laneTitles[tierRole]||"Общий тир-лист")+"</h3><span class=\"tag\">Нет данных</span>";
+   rows.innerHTML='<div class="demo-empty">Статистика пока недоступна. Проверь подключение и обнови приложение. Если ошибка повторится, сообщи об этом через раздел «Поддержка».</div>';
+   if(stamp)stamp.textContent=live&&live.updatedAt?"Источник: Rone Arena API · данные получены, но список пуст":"Ошибка загрузки статистики Rone Arena API";
    return;
  }
  if(tierMode==="stats"){const sorted=[...lane.heroes].sort((a,b)=>(Number(b[tierMetric])||0)-(Number(a[tierMetric])||0));const tierAt=i=>i<Math.ceil(sorted.length*.2)?"S":i<Math.ceil(sorted.length*.4)?"A":i<Math.ceil(sorted.length*.6)?"B":i<Math.ceil(sorted.length*.8)?"C":"D";sorted.forEach((h,i)=>h._metricTier=tierAt(i));lane.heroes=sorted;}else{heading.innerHTML="<h3>"+laneTitles[tierRole]+" · Турнирный тир-лист</h3><span class=\"tag\">ПРО-СЦЕНА</span>";rows.innerHTML='<div class="demo-empty">Турнирные результаты ещё не подключены. Здесь будет отдельный тир-лист по профессиональным матчам, без подмены рейтинговой статистикой.</div>';const stamp=document.getElementById("tierDataStamp");if(stamp)stamp.textContent="Турнирные данные: источник ожидает подключения";return;}
@@ -197,8 +202,7 @@ function renderTiers(){
    }).join("");
    return '<div class="tierrow"><div class="tierlabel '+t.toLowerCase()+'">'+t+'</div><div class="heroes">'+(content||'<span class="demo-empty">Нет героев в этом тире</span>')+'</div></div>';
  }).join("");
- const stamp=document.getElementById("tierDataStamp");
- if(stamp)stamp.textContent="Источник: Rone Arena API · Все ранги · 7 дней · обновлено "+new Date(live.updatedAt).toLocaleString("ru-RU");
+ if(stamp)stamp.textContent="Источник: Rone Arena API · "+lane.heroes.length+" героев · все ранги · 7 дней · обновлено "+(live.updatedAt?new Date(live.updatedAt).toLocaleString("ru-RU"):"время неизвестно");
 }
 function selectTierMode(btn,mode){tierMode=mode;btn.parentElement.querySelectorAll("button").forEach(x=>x.classList.toggle("active",x===btn));document.getElementById("tierMetricControls").style.display=mode==="stats"?"flex":"none";renderTiers()}function selectTierMetric(btn,metric){tierMetric=metric;btn.parentElement.querySelectorAll("button").forEach(x=>x.classList.toggle("active",x===btn));renderTiers()}function selectRole(btn,role){tierRole=role;btn.parentElement.querySelectorAll("button").forEach(x=>x.classList.toggle("active",x===btn));renderTiers()}
 function openTierSource(url){if(!url)return;if(window.AndroidExternal&&typeof window.AndroidExternal.open==="function"){window.AndroidExternal.open(String(url));return}window.open(url,"_blank")}
@@ -279,9 +283,9 @@ function showCoachScenario(){
  tower:{title:'Союзник атакует без поддержки',safe:'Оцени численность и дистанцию. Если команда далеко, сохрани здоровье и отступи вместе с ближайшими союзниками.',risky:'Войти следом только потому, что союзник уже начал бой.',why:'Ещё одна смерть не превращает плохое решение в хорошее. Присоединяйся, только если можешь изменить исход.'},
  lowhp:{title:'Мало здоровья рядом с волной миньонов',safe:'Отступи и восстановись, если карта не показывает безопасного окна. Не стой ради одного миньона под угрозой ганка.',risky:'Остаться на линии с низким здоровьем без информации о леснике.',why:'Цена одной волны обычно ниже цены смерти и потерянной башни.'},
  fight:{title:'Начинается бой 3 на 5',safe:'Отступи, пингуй отход и не трать ключевые умения на безнадёжный вход. Ищи возможность прикрыть выход.',risky:'Войти в меньшинстве без ультимейтов и пути отхода.',why:'Не нужно превращать проигрываемый бой в командный вайп. Сохрани ресурсы для следующей защиты.'}
- }[k];
+ }[k]||{title:'Ситуация не найдена',safe:'Выбери ситуацию из списка и попробуй ещё раз.',risky:'Не входи в бой без информации о врагах и поддержки команды.',why:'Для этой ситуации пока нет подготовленного разбора.'};
  const roleTip={'Лес':'Как лесник, следи за таймингом Retribution и не начинай объект без контроля подходов.','Мид':'Как мид, сначала оцени волну и возможность помочь союзнику без потери всей линии.','Золото':'Как стрелок, держи безопасную дистанцию и не входи первым.','Опыт':'Как игрок линии опыта, не уходи слишком далеко от команды перед крупным объектом.','Роум':'Как роум, проверяй обзор с союзником и не отдавай жизнь за одиночный куст.'}[role]||'Смотри на мини-карту и оцени численность перед входом.';
- const out=document.getElementById('coachScenarioAnswer');if(out)out.innerHTML='<div class="coach-result"><div class="coach-kicker">Разбор решения · '+coachEsc(role)+'</div><h4>'+coachEsc(data.title)+'</h4><strong>Лучший базовый ход</strong><p>'+coachEsc(data.safe)+'</p><strong>Чего избегать</strong><p>'+coachEsc(data.risky)+'</p><strong>Почему</strong><p>'+coachEsc(data.why)+'</p><p class="smallnote">'+coachEsc(roleTip)+'</p></div>';
+ const out=document.getElementById('coachScenarioAnswer');if(out)out.innerHTML='<div class="coach-result"><div class="coach-kicker">Разбор решения · '+coachEsc(role)+'</div><h4>'+coachEsc(data.title||'Разбор ситуации')+'</h4><strong>Лучший базовый ход</strong><p>'+coachEsc(data.safe||'Оцени карту, численность команд и доступные умения перед решением.')+'</p><strong>Чего избегать</strong><p>'+coachEsc(data.risky||'Не начинай бой без информации и поддержки.')+'</p><strong>Почему</strong><p>'+coachEsc(data.why||'Безопасное решение зависит от положения союзников и врагов.')+'</p><p class="smallnote">'+coachEsc(roleTip)+'</p></div>';
 }
 function toggleCoachGoal(i,on){const saved=coachRead('coach_goals',{});saved[i]=!!on;coachWrite('coach_goals',saved);const done=coachGoals.filter((_,j)=>saved[j]).length;const count=document.getElementById('coachProgressCount'),bar=document.getElementById('coachProgressBar');if(count)count.textContent=done+' из '+coachGoals.length+' привычек выполнено';if(bar)bar.style.width=Math.round(done/coachGoals.length*100)+'%';}
 function renderCoachReviewHistory(reviews){if(!reviews.length)return '<p class="smallnote">Пока нет сохранённых разборов. После матча запиши одну конкретную ошибку или удачное решение.</p>';return '<div class="coach-result"><div class="coach-kicker">Последние матчи</div>'+reviews.slice(0,5).map(r=>'<div style="padding:10px 0;border-bottom:1px solid #263954"><div style="display:flex;justify-content:space-between;gap:8px"><strong>'+coachEsc(r.result==='win'?'Победа':'Поражение')+'</strong><small class="smallnote" style="margin:0">'+coachEsc(r.date)+'</small></div><p>'+coachEsc(r.problemLabel)+'</p>'+(r.note?'<p>'+coachEsc(r.note)+'</p>':'')+'</div>').join('')+'</div>'}
