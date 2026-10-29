@@ -49,7 +49,8 @@ def main():
                     image = urljoin(URL, match.group(1))
             video = message.select_one(".tgme_widget_message_video_thumb")
             if not image and video:
-                match = re.search(r"background-image:\s*url\(['\"]?([^'\"\)]+)", style)
+                video_style = video.get("style", "")
+                match = re.search(r"background-image:\\s*url\\(['\\"]?([^'\\")]+)", video_style)
                 if match:
                     image = urljoin(URL, match.group(1))
             time_node = message.select_one("time")
