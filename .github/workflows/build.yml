@@ -254,7 +254,7 @@ jobs:
           if len(heroes) < 120 or edges < 300:
               raise SystemExit("Measured hero counter data is incomplete.")
           Path("app/src/main/assets/hero-counters.js").write_text(
-  "window.UPDATIQ_HERO_COUNTERS = " + json.dumps(data, ensure_ascii=False, separators=(",", ":")) + ";\n",
+              "window.UPDATIQ_HERO_COUNTERS = " + json.dumps(data, ensure_ascii=False, separators=(",", ":")) + ";\n",
               encoding="utf-8"
           )
           print("Embedded measured counter profiles:", len(heroes), "heroes,", edges, "matchups")
