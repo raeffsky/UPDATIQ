@@ -1,3 +1,4 @@
+# Rebuild after publishing complete hero matchup dataset.
 name: Build UPDATIQ APK
 on:
   push:
