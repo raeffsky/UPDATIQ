@@ -87,7 +87,7 @@ def main():
         name_match = re.search(r"([A-Za-z][A-Za-z .'-]+?)\s+(?:Presence|\d+\s*W)", text)
         if name_match:
             name = name_match.group(1).strip()
-        row = records.setdefault(slug, {"slug": slug, "name": name, "proPresence": 0.0, "picks": 0, "bans": 0, "winRate": None})
+        row = records.setdefault(slug, {"slug": slug, "name": name, "proPresence": 0.0, "picks": None, "bans": None, "winRate": None})
         if heading == "most picked":
             row["proPresence"] = max(row["proPresence"], number(r"Presence\s+([\d.]+)%", text))
             row["picks"] = int(number(r"(\d+)\s+picks", text))
