@@ -212,6 +212,9 @@ function renderTiers(){
    }
    const allowed=new Set(((lane&&lane.heroes)||[]).map(h=>h.slug).filter(Boolean));
    const tournamentHeroes=tournament.heroes.filter(h=>tierRole==="Все роли"||allowed.has(h.slug||h.rankedSlug));
+   const roleSorted=[...tournamentHeroes].sort((a,b)=>(Number(b.score)||0)-(Number(a.score)||0));
+   const roleTierAt=i=>i<Math.ceil(roleSorted.length*.10)?"S":i<Math.ceil(roleSorted.length*.30)?"A":i<Math.ceil(roleSorted.length*.70)?"B":i<Math.ceil(roleSorted.length*.90)?"C":"D";
+   roleSorted.forEach((h,i)=>h._roleTier=roleTierAt(i));
    if(!tournamentHeroes.length){
      heading.innerHTML="<h3>"+laneTitles[tierRole]+" · Турнирный тир-лист</h3><span class=\"tag\">Нет героев</span>";
      rows.innerHTML='<div class="demo-empty">Для этой роли пока недостаточно профессиональных матчей в источнике.</div>';
@@ -220,7 +223,7 @@ function renderTiers(){
    }
    heading.innerHTML="<h3>"+laneTitles[tierRole]+" · Турнирный тир-лист</h3><span class=\"tag\">"+tournament.games+" матчей</span>";
    rows.innerHTML=["S","A","B","C","D"].map(t=>{
-     const heroes=tournamentHeroes.filter(h=>h.tier===t);
+     const heroes=roleSorted.filter(h=>h._roleTier===t);
      const content=heroes.map(h=>{
        const slug=h.slug||h.rankedSlug||"";
        const localImage=slug?"hero-images/"+slug+".webp":"";
