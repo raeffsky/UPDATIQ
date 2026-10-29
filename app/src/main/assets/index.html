@@ -398,5 +398,6 @@ function saveCoachProfile(){const p={rank:document.getElementById('coachRank')?.
 })();
 
 for(const [label,fn] of [['профиль тренера',loadCoachProfile],['новости',renderNews],['официальные новости',loadOfficialNews],['герои',renderHeroes],['баланс',renderBalance],['тир-лист',renderTiers],['дополнительная мета',renderMetaExtras]]){try{fn()}catch(e){console.error('UPDATIQ init error · '+label,e);if(label==='тир-лист'){const stamp=document.getElementById('tierDataStamp');if(stamp)stamp.textContent='Не удалось отобразить мету. Перезапусти приложение или сообщи об ошибке.'}}}
+try{refreshOfficialNews()}catch(e){console.error('UPDATIQ official news refresh error',e)}
 (function(){const splash=document.getElementById("startup-splash");if(!splash)return;const hide=()=>splash.classList.add("splash-done");setTimeout(hide,1300);setTimeout(hide,5000)})();
 </script></body></html>
