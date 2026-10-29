@@ -217,14 +217,40 @@ jobs:
                   articles.extend(updates)
           except Exception as exc:
               print("Mobile Legends update source unavailable:", str(exc)[:180])
+          previous_patch_articles = []
+          try:
+              previous_data = json.loads(Path("official-news.json").read_text(encoding="utf-8"))
+              previous_patch_articles = [a for a in previous_data.get("articles", []) if a.get("category") == "update" and a.get("patchVersion")]
+          except Exception as exc:
+              print("Could not preserve previous patch notes:", str(exc)[:120])
+          known_ids = {a.get("id") for a in articles}
+          preserved = [a for a in previous_patch_articles if a.get("id") not in known_ids]
+          articles.extend(preserved)
+          print("Preserved detailed patch-note entries:", len(preserved))
           out = {"source":{"name":"MOONTON Games + Mobile Legends","url":URL,"updatesUrl":UPDATE_URL,"checkedAt":datetime.now(timezone.utc).isoformat(),"intervalMinutes":30},"articles":articles}
           Path("official-news.json").write_text(json.dumps(out,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
-          Path("app/src/main/assets/official-news-data.js").write_text(
-              "window.UPDATIQ_OFFICIAL_NEWS = " + json.dumps(out, ensure_ascii=False, separators=(",", ":")) + ";\n",
-              encoding="utf-8"
-          )
           print("Collected",len(articles),"official articles")
           print("Articles with images:",sum(bool(a["image"]) for a in articles))
+          PY
+      - name: Restore detailed patch notes when missing
+        run: |
+          PATCH_COUNT=$(python3 -c 'import json; from pathlib import Path; d=json.loads(Path("official-news.json").read_text(encoding="utf-8")); print(sum(1 for a in d.get("articles", []) if a.get("category") == "update" and a.get("patchVersion")))')
+          echo "Cached detailed patch-note entries: $PATCH_COUNT"
+          if [ "$PATCH_COUNT" -eq 0 ]; then
+            python3 -m pip install --quiet requests beautifulsoup4
+            python3 scripts/sync_patch_notes.py
+          fi
+      - name: Generate live official news data script
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          data = json.loads(Path("official-news.json").read_text(encoding="utf-8"))
+          Path("app/src/main/assets/official-news-data.js").write_text(
+              "window.UPDATIQ_OFFICIAL_NEWS = " + json.dumps(data, ensure_ascii=False, separators=(",", ":")) + ";\n",
+              encoding="utf-8"
+          )
+          print("Generated live official news script:", len(data.get("articles", [])), "articles")
           PY
       - name: Commit updated feed
         run: |
