@@ -12,7 +12,7 @@ on:
 permissions:
   contents: write
 concurrency:
-  group: sync-mlbbnexus-tiers
+  group: sync-mlbb-data-fast
   cancel-in-progress: false
 jobs:
   sync:
