@@ -216,7 +216,7 @@ jobs:
           if len(data.get("heroes", [])) < 10:
               raise SystemExit("Tournament tier data is incomplete.")
           Path("app/src/main/assets/tournament-data.js").write_text(
-              "window.UPDATIQ_MLBB_TOURNAMENT = " + json.dumps(data, ensure_ascii=False, separators=(",", ":")) + ";\\n",
+              "window.UPDATIQ_MLBB_TOURNAMENT = " + json.dumps(data, ensure_ascii=False, separators=(",", ":")) + ";\n",
               encoding="utf-8"
           )
           print("Embedded professional tournament data:", data.get("games"), "games,", len(data["heroes"]), "heroes")
@@ -245,7 +245,7 @@ jobs:
           print("Extracted inline script blocks:", len(scripts))
           PY
           node --check /tmp/updatiq-inline.js
-          for file in app/src/main/assets/hero-skills.js app/src/main/assets/official-news-data.js app/src/main/assets/tier-data.js app/src/main/assets/hero-builds.js; do
+          for file in app/src/main/assets/hero-skills.js app/src/main/assets/official-news-data.js app/src/main/assets/tier-data.js app/src/main/assets/hero-builds.js app/src/main/assets/tournament-data.js; do
             if [ -f "$file" ]; then node --check "$file"; fi
           done
       - name: Set up Java
