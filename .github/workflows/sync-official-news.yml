@@ -217,9 +217,11 @@ jobs:
                   articles.extend(updates)
           except Exception as exc:
               print("Mobile Legends update source unavailable:", str(exc)[:180])
+          previous_source = {}
           previous_patch_articles = []
           try:
               previous_data = json.loads(Path("official-news.json").read_text(encoding="utf-8"))
+              previous_source = previous_data.get("source", {})
               previous_patch_articles = [a for a in previous_data.get("articles", []) if a.get("category") == "update" and a.get("patchVersion")]
           except Exception as exc:
               print("Could not preserve previous patch notes:", str(exc)[:120])
@@ -227,7 +229,7 @@ jobs:
           preserved = [a for a in previous_patch_articles if a.get("id") not in known_ids]
           articles.extend(preserved)
           print("Preserved detailed patch-note entries:", len(preserved))
-          out = {"source":{"name":"MOONTON Games + Mobile Legends","url":URL,"updatesUrl":UPDATE_URL,"checkedAt":datetime.now(timezone.utc).isoformat(),"intervalMinutes":30},"articles":articles}
+          out = {"source":{"name":"MOONTON Games + Mobile Legends","url":URL,"updatesUrl":UPDATE_URL,"checkedAt":datetime.now(timezone.utc).isoformat(),"intervalMinutes":30,"patchNotesUrl":previous_source.get("patchNotesUrl","https://mlbbhub.com/patch-notes"),"patchNotesCheckedAt":previous_source.get("patchNotesCheckedAt","")}, "articles":articles}
           Path("official-news.json").write_text(json.dumps(out,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
           print("Collected",len(articles),"official articles")
           print("Articles with images:",sum(bool(a["image"]) for a in articles))
@@ -235,8 +237,10 @@ jobs:
       - name: Restore detailed patch notes when missing
         run: |
           PATCH_COUNT=$(python3 -c 'import json; from pathlib import Path; d=json.loads(Path("official-news.json").read_text(encoding="utf-8")); print(sum(1 for a in d.get("articles", []) if a.get("category") == "update" and a.get("patchVersion")))')
+          PATCH_AGE=$(python3 -c 'import json; from pathlib import Path; from datetime import datetime, timezone; d=json.loads(Path("official-news.json").read_text(encoding="utf-8")); s=d.get("source", {}).get("patchNotesCheckedAt", ""); print(max(0, int((datetime.now(timezone.utc)-datetime.fromisoformat(s.replace("Z","+00:00"))).total_seconds())) if s else 999999999)')
+          echo "Patch-note cache age in seconds: $PATCH_AGE"
           echo "Cached detailed patch-note entries: $PATCH_COUNT"
-          if [ "$PATCH_COUNT" -eq 0 ]; then
+          if [ "$PATCH_COUNT" -eq 0 ] || [ "$PATCH_AGE" -ge 21600 ]; then
             python3 -m pip install --quiet requests beautifulsoup4
             python3 scripts/sync_patch_notes.py
           fi
