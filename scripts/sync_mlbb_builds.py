@@ -72,6 +72,30 @@ def parse_build_page(session, hero):
     return {"title": "Рекомендуемая сборка", "items": candidates[0], "sourceUrl": page_url, "updatedAt": datetime.now(timezone.utc).isoformat()}
 
 
+def fetch_catalog_heroes(session):
+    """Read the full hero catalog, not just the subset appearing in the current ranked tier list."""
+    response = session.get(HERO_PAGE, timeout=30)
+    response.raise_for_status()
+    soup = BeautifulSoup(response.text, "html.parser")
+    catalog = {}
+    for link in soup.select('a[href*="/heroes/"]'):
+        href = link.get("href", "").split("?", 1)[0].rstrip("/")
+        match = re.search(r"/heroes/([^/]+)$", href, re.I)
+        if not match:
+            continue
+        slug = match.group(1).lower()
+        name = link.get_text(" ", strip=True)
+        if not name or slug in {"", "heroes"}:
+            continue
+        # Ignore navigation links that do not represent a named hero.
+        if len(name) > 80 or name.lower() in {"heroes", "all heroes", "browse all heroes"}:
+            continue
+        catalog.setdefault(slug, {"slug": slug, "name": name})
+    if len(catalog) < 120:
+        raise RuntimeError(f"Only {len(catalog)} heroes found in MLBBHub catalog; refusing to treat a partial roster as complete")
+    return catalog
+
+
 def main():
     tiers_path = Path("mlbbnexus-tiers.json")
     if not tiers_path.exists():
@@ -88,6 +112,14 @@ def main():
         raise SystemExit(f"Only {len(heroes)} unique heroes in tier data; refusing to sync builds")
     session = requests.Session()
     session.headers.update(HEADERS)
+    catalog = fetch_catalog_heroes(session)
+    # Merge the full 133-hero catalog with lane-tier data; tier lists omit heroes
+    # that are not currently represented in ranked stats.
+    for slug, hero in catalog.items():
+        heroes.setdefault(slug, hero)
+    print(f"Full hero catalog: {len(catalog)} heroes; build attempts: {len(heroes)}")
+    if len(heroes) < 120:
+        raise SystemExit(f"Only {len(heroes)} heroes available after catalog merge; refusing partial sync")
     result = {"source": "MLBBHub", "sourceUrl": SOURCE, "updatedAt": datetime.now(timezone.utc).isoformat(), "builds": {}}
     errors = []
     for index, hero in enumerate(heroes.values(), 1):
