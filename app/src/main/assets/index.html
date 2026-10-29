@@ -202,7 +202,7 @@ function renderTiers(){
    if(stamp)stamp.textContent="Ошибка отображения: не найдены элементы тир-листа";
    return;
  }
- if(!lane||!Array.isArray(lane.heroes)||!lane.heroes.length){
+ if(tierMode!=="tournament"&&(!lane||!Array.isArray(lane.heroes)||!lane.heroes.length)){
    heading.innerHTML="<h3>"+(laneTitles[tierRole]||"Общий тир-лист")+"</h3><span class=\"tag\">Нет данных</span>";
    rows.innerHTML='<div class="demo-empty">Статистика пока недоступна. Проверь подключение и обнови приложение. Если ошибка повторится, сообщи об этом через раздел «Поддержка».</div>';
    if(stamp)stamp.textContent=live&&live.updatedAt?"Источник: Rone Arena API · данные получены, но список пуст":"Ошибка загрузки статистики Rone Arena API";
@@ -216,7 +216,7 @@ function renderTiers(){
      if(stamp)stamp.textContent="Источник турниров: MLBBDex / Liquipedia · данные не загружены";
      return;
    }
-   const allowed=new Set(lane.heroes.map(h=>h.slug).filter(Boolean));
+   const allowed=new Set(((lane&&lane.heroes)||[]).map(h=>h.slug).filter(Boolean));
    const tournamentHeroes=tournament.heroes.filter(h=>tierRole==="Все роли"||allowed.has(h.slug||h.rankedSlug));
    if(!tournamentHeroes.length){
      heading.innerHTML="<h3>"+laneTitles[tierRole]+" · Турнирный тир-лист</h3><span class=\"tag\">Нет героев</span>";
