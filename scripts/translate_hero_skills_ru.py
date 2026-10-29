@@ -91,8 +91,11 @@ def main():
     TARGET.write_text("window.heroSkillData = " + json.dumps(data, ensure_ascii=False, separators=(",", ":")) + ";\n", encoding="utf-8")
     CACHE.write_text(json.dumps(cache, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     count = sum(len(skills) for skills in data.values())
-    untranslated = sum(1 for skills in data.values() for skill in skills if is_english(skill.get("description", "")))
-    print("Russian skill data written:", len(data), "heroes,", count, "skills; English descriptions remaining:", untranslated)
+    english_names = sum(1 for skills in data.values() for skill in skills if is_english(skill.get("name", "")))
+    english_descriptions = sum(1 for skills in data.values() for skill in skills if is_english(skill.get("description", "")))
+    print("Russian skill data written:", len(data), "heroes,", count, "skills; English names remaining:", english_names, "; English descriptions remaining:", english_descriptions)
+    if english_names or english_descriptions:
+        raise RuntimeError(f"Russian localization incomplete: {english_names} skill names and {english_descriptions} descriptions remain in English")
 
 if __name__ == "__main__":
     main()
