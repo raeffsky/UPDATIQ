@@ -4,6 +4,7 @@ on:
     paths:
       - "scripts/sync_mlbbnexus.py"
       - "scripts/sync_mlbb_builds.py"
+      - "scripts/sync_mlbb_counters.py"
       - ".github/workflows/sync-mlbbnexus-tiers.yml"
   schedule:
     - cron: "17 */6 * * *"
@@ -25,14 +26,16 @@ jobs:
         run: python scripts/sync_mlbbnexus.py
       - name: Fetch current hero builds
         run: python scripts/sync_mlbb_builds.py
+      - name: Fetch measured counters for all heroes
+        run: python scripts/sync_mlbb_counters.py
       - name: Commit updated tier and build data
         run: |
-          if git diff --quiet -- mlbbnexus-tiers.json mlbb-hero-builds.json; then
+          if git diff --quiet -- mlbbnexus-tiers.json mlbb-hero-builds.json mlbb-hero-counters.json; then
             echo "Tier data unchanged."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add mlbbnexus-tiers.json mlbb-hero-builds.json
+          git add mlbbnexus-tiers.json mlbb-hero-builds.json mlbb-hero-counters.json
           git commit -m "chore: sync MLBB Nexus lane tier data"
           git push
