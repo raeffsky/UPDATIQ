@@ -90,7 +90,9 @@ def fetch_catalog_heroes(session):
         # Ignore navigation links that do not represent a named hero.
         if len(name) > 80 or name.lower() in {"heroes", "all heroes", "browse all heroes"}:
             continue
-        catalog.setdefault(slug, {"slug": slug, "name": name})
+        img = link.find("img")
+        image = img.get("src", "") if img else ""
+        catalog.setdefault(slug, {"slug": slug, "name": name, "image": urljoin("https://mlbbhub.com", image) if image else ""})
     if len(catalog) < 120:
         raise RuntimeError(f"Only {len(catalog)} heroes found in MLBBHub catalog; refusing to treat a partial roster as complete")
     return catalog
@@ -120,7 +122,7 @@ def main():
     print(f"Full hero catalog: {len(catalog)} heroes; build attempts: {len(heroes)}")
     if len(heroes) < 120:
         raise SystemExit(f"Only {len(heroes)} heroes available after catalog merge; refusing partial sync")
-    result = {"source": "MLBBHub", "sourceUrl": SOURCE, "updatedAt": datetime.now(timezone.utc).isoformat(), "builds": {}}
+    result = {"source": "MLBBHub", "sourceUrl": SOURCE, "updatedAt": datetime.now(timezone.utc).isoformat(), "heroes": sorted(catalog.values(), key=lambda h: h["name"].casefold()), "builds": {}}
     errors = []
     for index, hero in enumerate(heroes.values(), 1):
         try:
