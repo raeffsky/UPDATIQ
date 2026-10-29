@@ -2,7 +2,7 @@
 name: Build UPDATIQ APK
 on:
   push:
-    branches: [main]
+    branches: [main, development]
     paths-ignore:
       - 'app/src/main/assets/community-news.js'
   workflow_dispatch:
@@ -327,6 +327,7 @@ jobs:
       - name: Prepare release APK
         run: cp app/build/outputs/apk/release/app-release.apk UPDATIQ.apk
       - name: Publish latest APK for in-app updates
+        if: github.ref == 'refs/heads/main'
         continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
