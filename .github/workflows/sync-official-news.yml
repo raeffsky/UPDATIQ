@@ -219,6 +219,10 @@ jobs:
               print("Mobile Legends update source unavailable:", str(exc)[:180])
           out = {"source":{"name":"MOONTON Games + Mobile Legends","url":URL,"updatesUrl":UPDATE_URL,"checkedAt":datetime.now(timezone.utc).isoformat(),"intervalMinutes":30},"articles":articles}
           Path("official-news.json").write_text(json.dumps(out,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+          Path("app/src/main/assets/official-news-data.js").write_text(
+              "window.UPDATIQ_OFFICIAL_NEWS = " + json.dumps(out, ensure_ascii=False, separators=(",", ":")) + ";\\n",
+              encoding="utf-8"
+          )
           print("Collected",len(articles),"official articles")
           print("Articles with images:",sum(bool(a["image"]) for a in articles))
           PY
@@ -226,7 +230,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add official-news.json
+          git add official-news.json app/src/main/assets/official-news-data.js
           if git diff --cached --quiet; then echo "No news changes."; exit 0; fi
           git commit -m "Update official MOONTON news feed"
           # API commits or another workflow may update main after checkout.
