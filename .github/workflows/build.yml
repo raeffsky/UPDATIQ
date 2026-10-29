@@ -74,8 +74,7 @@ jobs:
           key: hero-skill-ru-${{ runner.os }}-${{ github.run_id }}
           restore-keys: |
             hero-skill-ru-${{ runner.os }}-
-      - name: Translate all hero skill names and descriptions into Russian
-        continue-on-error: true
+      - name: Translate and validate all hero skill text in Russian
         run: python3 scripts/translate_hero_skills_ru.py
       - name: Download missing tier-list portraits for offline use
         continue-on-error: true
