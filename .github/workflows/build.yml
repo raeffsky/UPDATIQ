@@ -203,6 +203,23 @@ jobs:
               Path("app/src/main/assets/tier-data.js").write_text("window.UPDATIQ_MLBBNEXUS_TIERS = null;\n", encoding="utf-8")
               print("No synced tier data yet; app will show an unavailable-data state.")
           PY
+      - name: Embed tournament tier data for offline WebView access
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          source = Path("mlbb-tournament-tiers.json")
+          if not source.exists():
+              raise SystemExit("Tournament tier data is missing; refusing to ship a fake tournament list.")
+          data = json.loads(source.read_text(encoding="utf-8"))
+          if len(data.get("heroes", [])) < 10:
+              raise SystemExit("Tournament tier data is incomplete.")
+          Path("app/src/main/assets/tournament-data.js").write_text(
+              "window.UPDATIQ_MLBB_TOURNAMENT = " + json.dumps(data, ensure_ascii=False, separators=(",", ":")) + ";\\n",
+              encoding="utf-8"
+          )
+          print("Embedded professional tournament data:", data.get("games"), "games,", len(data["heroes"]), "heroes")
+          PY
       - name: Embed current hero build data
         run: |
           python3 - <<'PY'
