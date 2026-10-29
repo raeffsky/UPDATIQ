@@ -11,23 +11,11 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.JavascriptInterface;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Build;
-import android.provider.Settings;
 import android.widget.Toast;
-import androidx.core.content.FileProvider;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class MainActivity extends Activity {
     private WebView webView;
-    private final ExecutorService updaterExecutor = Executors.newSingleThreadExecutor();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +39,6 @@ public class MainActivity extends Activity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             settings.setOffscreenPreRaster(true);
         }
-        webView.addJavascriptInterface(new AndroidUpdater(), "AndroidUpdater");
         webView.addJavascriptInterface(new AndroidNavigation(), "AndroidNavigation");
         webView.addJavascriptInterface(new AndroidExternal(), "AndroidExternal");
         webView.setWebViewClient(new WebViewClient() {
@@ -84,57 +71,6 @@ public class MainActivity extends Activity {
         else webView.loadUrl("file:///android_asset/index.html");
     }
 
-
-    private class AndroidUpdater {
-        @JavascriptInterface
-        public void checkAndInstall() {
-            updaterExecutor.execute(() -> {
-                HttpURLConnection connection = null;
-                try {
-                    URL url = new URL("https://github.com/raeffsky/UPDATIQ/releases/latest/download/UPDATIQ.apk");
-                    connection = (HttpURLConnection) url.openConnection();
-                    connection.setConnectTimeout(15000);
-                    connection.setReadTimeout(45000);
-                    connection.setInstanceFollowRedirects(true);
-                    connection.connect();
-                    if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                        throw new Exception("Новый APK пока не опубликован. Попробуй позже.");
-                    }
-                    File dir = new File(getCacheDir(), "updates");
-                    if (!dir.exists() && !dir.mkdirs()) throw new Exception("Не удалось создать папку загрузки.");
-                    File apk = new File(dir, "UPDATIQ.apk");
-                    try (InputStream in = connection.getInputStream(); FileOutputStream out = new FileOutputStream(apk)) {
-                        byte[] buffer = new byte[8192];
-                        int count;
-                        while ((count = in.read(buffer)) != -1) out.write(buffer, 0, count);
-                    }
-                    runOnUiThread(() -> installDownloadedApk(apk));
-                } catch (Exception e) {
-                    String msg = e.getMessage() == null ? "Не удалось скачать обновление." : e.getMessage();
-                    runOnUiThread(() -> Toast.makeText(MainActivity.this, msg, Toast.LENGTH_LONG).show());
-                } finally {
-                    if (connection != null) connection.disconnect();
-                }
-            });
-        }
-    }
-
-    private void installDownloadedApk(File apk) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !getPackageManager().canRequestPackageInstalls()) {
-            startActivity(new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:" + getPackageName())));
-            Toast.makeText(this, "Разреши установку приложений для UPDATIQ и нажми обновление ещё раз.", Toast.LENGTH_LONG).show();
-            return;
-        }
-        try {
-            Uri uri = FileProvider.getUriForFile(this, getPackageName() + ".fileprovider", apk);
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setDataAndType(uri, "application/vnd.android.package-archive");
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-        } catch (Exception e) {
-            Toast.makeText(this, "Не удалось открыть установщик: " + e.getMessage(), Toast.LENGTH_LONG).show();
-        }
-    }
 
     @Override
     protected void onResume() {
