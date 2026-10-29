@@ -96,7 +96,7 @@ def extract_structured_patch(soup):
                 ch = raw[pos]
                 if quoted:
                     if escaped: escaped = False
-                    elif ch == "\\\\": escaped = True
+                    elif ch == "\\": escaped = True
                     elif ch == '"': quoted = False
                 else:
                     if ch == '"': quoted = True
@@ -260,12 +260,12 @@ def main():
                         card_lines.append(text)
                         card_seen.add(text)
             body = "\n\n".join(card_lines) if card_lines else clean_text(candidates[0])
-        if structured and not re.search(r"\\b\\d+\\s*(?:→|->|to)\\s*\\d+", body):
+        if structured and not re.search(r"\b\d+\s*(?:→|->|to)\s*\d+", body):
             raise RuntimeError(f"Structured patch data found for {version}, but numeric before/after changes were not rendered.")
         if len(body) < 700:
             print(f"Skipping {version}: article body too short ({len(body)} chars)", file=sys.stderr)
             continue
-        if card_lines and not re.search(r"\\b\\d+\\s*(?:→|->|to)\\s*\\d+", body):
+        if card_lines and not re.search(r"\b\d+\s*(?:→|->|to)\s*\d+", body):
             print(f"Warning: detected change cards for {version}, but no numeric before/after values; verify source markup.", file=sys.stderr)
         title = f"MLBB Patch Notes {version}"
         date_match = re.search(r"(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},?\s+20\d{2}", page.text, re.I)
