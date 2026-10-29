@@ -239,6 +239,25 @@ jobs:
           )
           print("Embedded current hero builds:", len(data.get("builds", {})))
           PY
+      - name: Embed measured hero counter data
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          source = Path("mlbb-hero-counters.json")
+          if not source.exists():
+              raise SystemExit("Measured hero counter data is missing; refusing to ship placeholder counter picks.")
+          data = json.loads(source.read_text(encoding="utf-8"))
+          heroes = data.get("heroes", {})
+          edges = sum(len(v.get("counters", [])) for v in heroes.values())
+          if len(heroes) < 120 or edges < 300:
+              raise SystemExit("Measured hero counter data is incomplete.")
+          Path("app/src/main/assets/hero-counters.js").write_text(
+              "window.UPDATIQ_HERO_COUNTERS = " + json.dumps(data, ensure_ascii=False, separators=(",", ":")) + ";\\n",
+              encoding="utf-8"
+          )
+          print("Embedded measured counter profiles:", len(heroes), "heroes,", edges, "matchups")
+          PY
       - name: Validate inline JavaScript syntax
         run: |
           python3 - <<'PY'
@@ -250,7 +269,7 @@ jobs:
           print("Extracted inline script blocks:", len(scripts))
           PY
           node --check /tmp/updatiq-inline.js
-          for file in app/src/main/assets/hero-skills.js app/src/main/assets/official-news-data.js app/src/main/assets/tier-data.js app/src/main/assets/hero-builds.js app/src/main/assets/tournament-data.js; do
+          for file in app/src/main/assets/hero-skills.js app/src/main/assets/official-news-data.js app/src/main/assets/tier-data.js app/src/main/assets/hero-builds.js app/src/main/assets/tournament-data.js app/src/main/assets/hero-counters.js; do
             if [ -f "$file" ]; then node --check "$file"; fi
           done
       - name: Set up Java
