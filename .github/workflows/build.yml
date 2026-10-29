@@ -184,6 +184,8 @@ jobs:
           PY
       - name: Sync live MLBB ranked statistics
         run: python3 scripts/sync_mlbb_tiers.py
+      - name: Sync professional MLBB tournament statistics
+        run: python3 scripts/sync_mlbb_tournament.py
       - name: Embed MLBB Nexus tier data for offline WebView access
         run: |
           python3 - <<'PY'
