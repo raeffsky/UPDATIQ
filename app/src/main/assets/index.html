@@ -212,7 +212,7 @@ function renderTiers(){
  if(tierMode==="tournament"){
    const tournament=window.UPDATIQ_MLBB_TOURNAMENT;
    if(!tournament||!Array.isArray(tournament.heroes)||!tournament.heroes.length){
-     heading.innerHTML="<h3>"+laneTitles[tierRole]+" · Турнирный тир-лист</h3><span class="tag">Нет данных</span>";
+     heading.innerHTML="<h3>"+laneTitles[tierRole]+" · Турнирный тир-лист</h3><span class=\"tag\">Нет данных</span>";
      rows.innerHTML='<div class="demo-empty">Турнирная статистика сейчас недоступна. Повтори проверку после следующей сборки.</div>';
      if(stamp)stamp.textContent="Источник турниров: MLBBDex / Liquipedia · данные не загружены";
      return;
@@ -220,12 +220,12 @@ function renderTiers(){
    const allowed=new Set(lane.heroes.map(h=>h.slug).filter(Boolean));
    const tournamentHeroes=tournament.heroes.filter(h=>tierRole==="Все роли"||allowed.has(h.slug||h.rankedSlug));
    if(!tournamentHeroes.length){
-     heading.innerHTML="<h3>"+laneTitles[tierRole]+" · Турнирный тир-лист</h3><span class="tag">Нет героев</span>";
+     heading.innerHTML="<h3>"+laneTitles[tierRole]+" · Турнирный тир-лист</h3><span class=\"tag\">Нет героев</span>";
      rows.innerHTML='<div class="demo-empty">Для этой роли пока недостаточно профессиональных матчей в источнике.</div>';
      if(stamp)stamp.textContent="Источник: MLBBDex / Liquipedia · "+tournament.games+" матчей";
      return;
    }
-   heading.innerHTML="<h3>"+laneTitles[tierRole]+" · Турнирный тир-лист</h3><span class="tag">"+tournament.games+" матчей</span>";
+   heading.innerHTML="<h3>"+laneTitles[tierRole]+" · Турнирный тир-лист</h3><span class=\"tag\">"+tournament.games+" матчей</span>";
    rows.innerHTML=["S","A","B","C","D"].map(t=>{
      const heroes=tournamentHeroes.filter(h=>h.tier===t);
      const content=heroes.map(h=>{
