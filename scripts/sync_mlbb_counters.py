@@ -42,11 +42,14 @@ def main():
         "patch": "See source page for current patch",
         "heroes": {}
     }
-    errors = []
-    for index, hero in enumerate(roster.values(), 1):
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+
+    def fetch_one(hero):
         url = f"{BASE}/counter/{hero['slug']}"
         try:
-            response = session.get(url, timeout=25)
+            page_session = requests.Session()
+            page_session.headers.update(HEADERS)
+            response = page_session.get(url, timeout=12)
             response.raise_for_status()
             soup = BeautifulSoup(response.text, "html.parser")
             heading = next((h for h in soup.find_all(["h2", "h3"]) if "proven counters" in h.get_text(" ", strip=True).lower()), None)
@@ -65,35 +68,34 @@ def main():
                         link = li.select_one('a[href*="/counter/"]')
                         if not link:
                             continue
-                        slug = slug_from_href(link.get("href", ""))
-                        if not slug or slug == hero["slug"]:
+                        counter_slug = slug_from_href(link.get("href", ""))
+                        if not counter_slug or counter_slug == hero["slug"]:
                             continue
                         img = link.find("img")
                         name = (img.get("alt", "").replace(" hero icon", "").strip() if img else "")
                         if not name:
-                            name = re.sub(r"^\\d+\\s*", "", link.get_text(" ", strip=True)).strip()
-                        text = li.get_text(" ", strip=True)
-                        edge_match = re.search(r"([+−-]?\d+(?:\.\d+)?)\s*pp", text, re.I)
+                            name = re.sub(r"^\d+\s*", "", link.get_text(" ", strip=True)).strip()
+                        text_value = li.get_text(" ", strip=True)
+                        edge_match = re.search(r"([+−-]?\d+(?:\.\d+)?)\s*pp", text_value, re.I)
                         edge = float(edge_match.group(1).replace("−", "-")) if edge_match else None
-                        counters.append({
-                            "slug": slug,
-                            "name": name,
-                            "edge": edge,
-                            "sourceUrl": url
-                        })
-            # Store an empty list only when the source page itself loaded and was parsed.
-            # No guessed or role-based counter recommendations are generated.
-            output["heroes"][hero["slug"]] = {
-                "name": hero["name"],
-                "role": hero_role,
-                "sourceUrl": url,
-                "counters": counters
-            }
-            print(f"OK {hero['name']}: {len(counters)} measured counters")
+                        counters.append({"slug": counter_slug, "name": name, "edge": edge, "sourceUrl": url})
+            return hero["slug"], {"name": hero["name"], "role": hero_role, "sourceUrl": url, "counters": counters}, None
         except Exception as exc:
-            errors.append(f"{hero['name']}: {exc}")
-            print(f"WARNING {hero['name']}: {exc}", file=sys.stderr)
-        time.sleep(0.2)
+            return hero["slug"], None, f"{hero['name']}: {exc}"
+
+    errors = []
+    completed = 0
+    with ThreadPoolExecutor(max_workers=6) as pool:
+        futures = [pool.submit(fetch_one, hero) for hero in roster.values()]
+        for future in as_completed(futures):
+            slug, record, error = future.result()
+            completed += 1
+            if record is not None:
+                output["heroes"][slug] = record
+                print(f"OK {record['name']}: {len(record['counters'])} measured counters ({completed}/{len(roster)})")
+            else:
+                errors.append(error)
+                print(f"WARNING {error} ({completed}/{len(roster)})", file=sys.stderr)
 
     if len(output["heroes"]) < 120:
         raise RuntimeError(f"Only {len(output['heroes'])}/{len(roster)} counter pages parsed; refusing partial update. " + "; ".join(errors[:8]))
