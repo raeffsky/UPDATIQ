@@ -166,7 +166,7 @@ jobs:
                                   if translated and (not ordered or ordered[-1].get("text") != translated):
                                       ordered.append({"type":"text","text":translated})
                           if ordered: article["contentBlocks"] = ordered
-                          print("Full article", article["id"], "characters", len(article["fullText"]), "images", len(article["images"]), "ordered blocks", len(blocks_ru))
+                          print("Full article", article["id"], "characters", len(article["fullText"]), "images", len(article["images"]), "ordered blocks", len(ordered))
                       else: print("Article body not found:", article["id"])
                   except Exception as exc: print("Article fetch failed:", article["id"], str(exc)[:120])
               else:
@@ -232,7 +232,7 @@ jobs:
           out = {"source":{"name":"MOONTON Games + Mobile Legends","url":URL,"updatesUrl":UPDATE_URL,"checkedAt":datetime.now(timezone.utc).isoformat(),"intervalMinutes":30,"patchNotesUrl":previous_source.get("patchNotesUrl","https://mlbbhub.com/patch-notes"),"patchNotesCheckedAt":previous_source.get("patchNotesCheckedAt","")}, "articles":articles}
           Path("official-news.json").write_text(json.dumps(out,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
           print("Collected",len(articles),"official articles")
-          print("Articles with images:",sum(bool(a["image"]) for a in articles))
+          print("Articles with images:",sum(bool(a.get("image")) for a in articles))
           PY
       - name: Restore detailed patch notes when missing
         run: |
