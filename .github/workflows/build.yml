@@ -5,6 +5,9 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '17 */6 * * *'
+concurrency:
+  group: updatiq-build-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: write
 jobs:
