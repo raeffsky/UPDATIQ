@@ -92,7 +92,7 @@ def main():
     measured = sum(len(v["counters"]) for v in output["heroes"].values())
     if measured < 300:
         raise RuntimeError(f"Only {measured} measured counter edges parsed; refusing likely broken extraction.")
-    Path("mlbb-hero-counters.json").write_text(json.dumps(output, ensure_ascii=False, separators=(",", ":")) + "\\n", encoding="utf-8")
+    Path("mlbb-hero-counters.json").write_text(json.dumps(output, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
     print(f"Saved {len(output['heroes'])} hero counter profiles and {measured} measured edges; page errors {len(errors)}")
 
 
