@@ -121,7 +121,7 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:#55c9f4;box-sh
 </main>
 <nav class="bottom"><button class="nav active" data-page="home" onclick="showPage('home',this)"><span><iconify-icon icon="tabler:home" aria-hidden="true"></iconify-icon></span>Главная</button><button class="nav" data-page="news" onclick="showPage('news',this)"><span><iconify-icon icon="tabler:news" aria-hidden="true"></iconify-icon></span>Новости</button><button class="nav" data-page="coach" onclick="showPage('coach',this)"><span><iconify-icon icon="tabler:brain" aria-hidden="true"></iconify-icon></span>Тренер</button><button class="nav" data-page="meta" onclick="showPage('meta',this)"><span><iconify-icon icon="tabler:chart-bar" aria-hidden="true"></iconify-icon></span>Мета</button><button class="nav" data-page="heroes" onclick="showPage('heroes',this)"><span><iconify-icon icon="tabler:users" aria-hidden="true"></iconify-icon></span>Герои</button><button class="nav" data-page="more" onclick="showPage('more',this)"><span><iconify-icon icon="tabler:layout-grid" aria-hidden="true"></iconify-icon></span>Ещё</button></nav>
 <script src="official-news-data.js"></script>
-<script src="community-news.js"></script>\n<script src="tier-data.js"></script>\n<script src="hero-builds.js"></script>
+<script src="community-news.js"></script>\n<script src="tier-data.js"></script><script src="tournament-data.js"></script>\n<script src="hero-builds.js"></script>
 <script>
 const sample=[];let currentFilter='all';function card(n,context){const i=sample.indexOf(n),home=context==="home";return '<article class="news" role="button" tabindex="0" onclick="openDemoNews('+i+','+(home?'true':'false')+')" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();openDemoNews('+i+','+(home?'true':'false')+')}"><div class="thumb"><iconify-icon icon="'+n.icon+'" aria-hidden="true"></iconify-icon></div><div class="newsbody"><div class="meta"><span class="tag '+(n.kind==='official'?'official':n.kind==='community'?'community':'')+'">'+n.tag+'</span><span class="time">'+n.time+'</span></div><h3>'+n.title+'</h3><p>'+n.desc+'</p><div class="source"><span>'+n.source+'</span><span class="demo-badge">Открыть <iconify-icon icon="tabler:arrow-right" aria-hidden="true"></iconify-icon></span></div></div></article>'}
 let previousDetailPage="home";
@@ -209,7 +209,40 @@ function renderTiers(){
    if(stamp)stamp.textContent=live&&live.updatedAt?"Источник: Rone Arena API · данные получены, но список пуст":"Ошибка загрузки статистики Rone Arena API";
    return;
  }
- if(tierMode==="stats"){const sorted=[...lane.heroes].sort((a,b)=>(Number(b[tierMetric])||0)-(Number(a[tierMetric])||0));const tierAt=i=>i<Math.ceil(sorted.length*.2)?"S":i<Math.ceil(sorted.length*.4)?"A":i<Math.ceil(sorted.length*.6)?"B":i<Math.ceil(sorted.length*.8)?"C":"D";sorted.forEach((h,i)=>h._metricTier=tierAt(i));lane.heroes=sorted;}else{heading.innerHTML="<h3>"+laneTitles[tierRole]+" · Турнирный тир-лист</h3><span class=\"tag\">ПРО-СЦЕНА</span>";rows.innerHTML='<div class="demo-empty">Турнирные результаты ещё не подключены. Здесь будет отдельный тир-лист по профессиональным матчам, без подмены рейтинговой статистикой.</div>';const stamp=document.getElementById("tierDataStamp");if(stamp)stamp.textContent="Турнирные данные: источник ожидает подключения";return;}
+ if(tierMode==="tournament"){
+   const tournament=window.UPDATIQ_MLBB_TOURNAMENT;
+   if(!tournament||!Array.isArray(tournament.heroes)||!tournament.heroes.length){
+     heading.innerHTML="<h3>"+laneTitles[tierRole]+" · Турнирный тир-лист</h3><span class="tag">Нет данных</span>";
+     rows.innerHTML='<div class="demo-empty">Турнирная статистика сейчас недоступна. Повтори проверку после следующей сборки.</div>';
+     if(stamp)stamp.textContent="Источник турниров: MLBBDex / Liquipedia · данные не загружены";
+     return;
+   }
+   const allowed=new Set(lane.heroes.map(h=>h.slug).filter(Boolean));
+   const tournamentHeroes=tournament.heroes.filter(h=>tierRole==="Все роли"||allowed.has(h.slug||h.rankedSlug));
+   if(!tournamentHeroes.length){
+     heading.innerHTML="<h3>"+laneTitles[tierRole]+" · Турнирный тир-лист</h3><span class="tag">Нет героев</span>";
+     rows.innerHTML='<div class="demo-empty">Для этой роли пока недостаточно профессиональных матчей в источнике.</div>';
+     if(stamp)stamp.textContent="Источник: MLBBDex / Liquipedia · "+tournament.games+" матчей";
+     return;
+   }
+   heading.innerHTML="<h3>"+laneTitles[tierRole]+" · Турнирный тир-лист</h3><span class="tag">"+tournament.games+" матчей</span>";
+   rows.innerHTML=["S","A","B","C","D"].map(t=>{
+     const heroes=tournamentHeroes.filter(h=>h.tier===t);
+     const content=heroes.map(h=>{
+       const slug=h.slug||h.rankedSlug||"";
+       const localImage=slug?"hero-images/"+slug+".webp":"";
+       const image=h.image?'<img class="tier-portrait" src="'+localImage+'" data-remote="'+h.image+'" alt="" loading="lazy" onerror="if(this.dataset.remote&&this.src!==this.dataset.remote){this.src=this.dataset.remote}else{this.style.display=\'none\';this.nextElementSibling.style.display=\'block\'}"><iconify-icon class="tier-fallback" style="display:none" icon="tabler:shield-question"></iconify-icon>':'<iconify-icon class="tier-fallback" icon="tabler:shield-question"></iconify-icon>';
+       const win=h.winRate==null?"—":Number(h.winRate).toFixed(1)+"%";
+       const stats='<small>Присутствие '+Number(h.proPresence||0).toFixed(1)+'% · Победы '+win+'<br>Пик '+(h.picks||0)+' · Бан '+(h.bans||0)+'</small>';
+       const safeName=String(h.name||slug).replace(/\\/g,"\\\\").replace(/'/g,"\\'");
+       return '<button class="demo-tier-hero" onclick="openTierHero(\''+safeName+'\',\''+slug+'\')">'+image+String(h.name||slug)+stats+'</button>';
+     }).join("");
+     return '<div class="tierrow"><div class="tierlabel '+t.toLowerCase()+'">'+t+'</div><div class="heroes">'+(content||'<span class="demo-empty">Нет героев в этом тире</span>')+'</div></div>';
+   }).join("");
+   if(stamp)stamp.textContent="Источник: MLBBDex / Liquipedia (CC BY-SA 3.0) · "+tournament.games+" матчей · "+tournament.heroCount+" героев · окно "+tournament.windowDays+" дней · обновлено "+(tournament.updatedAt?new Date(tournament.updatedAt).toLocaleString("ru-RU"):"время неизвестно");
+   return;
+ }
+ if(tierMode==="stats"){const sorted=[...lane.heroes].sort((a,b)=>(Number(b[tierMetric])||0)-(Number(a[tierMetric])||0));const tierAt=i=>i<Math.ceil(sorted.length*.2)?"S":i<Math.ceil(sorted.length*.4)?"A":i<Math.ceil(sorted.length*.6)?"B":i<Math.ceil(sorted.length*.8)?"C":"D";sorted.forEach((h,i)=>h._metricTier=tierAt(i));lane.heroes=sorted;}
  const counts={};["S","A","B","C","D"].forEach(t=>counts[t]=lane.heroes.filter(h=>h.tier===t).length);
  heading.innerHTML="<h3>"+laneTitles[tierRole]+"</h3><span class=\"tag\">"+lane.heroes.length+" героев · Rone Arena</span>";
  rows.innerHTML=["S","A","B","C","D"].map(t=>{
