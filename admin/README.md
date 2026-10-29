@@ -26,3 +26,10 @@ Mobile-first admin website for UPDATIQ. This folder is intended to be deployed a
 - After deployment, add the deployed domain to Supabase Auth URL configuration.
 
 Deploying the folder does not change the APK. The Android app will only receive server-driven content after its relevant sections are connected to the database.
+
+
+## Initial database schema
+
+Run `supabase-schema.sql` in the Supabase SQL Editor. It creates tables for news, announcements and generic JSON content, enables Row Level Security, and grants writes only when the authenticated user's trusted `app_metadata.role` is `admin`.
+
+The schema intentionally does not expose privileged keys or provide an insecure client-side way to grant admin status. Admin role assignment must be done through trusted Supabase tooling/server-side code. The UI sign-in scaffold is present, but CRUD/publishing screens still need to be connected before the panel can edit server content.
