@@ -227,7 +227,7 @@ def main():
 
     data = json.loads(DATA_PATH.read_text(encoding="utf-8"))
     existing = data.get("articles", [])
-    retained = [a for a in existing if not str(a.get("id", "")).startswith("mlbb-patch-")]
+    retained = list(existing)
     patches = []
     for version, url, label in links[:12]:
         page = session.get(url, timeout=30)
@@ -293,6 +293,8 @@ def main():
     if not patches:
         raise RuntimeError("No usable patch articles were fetched; leaving existing data unchanged.")
     # Newest entries first, with all non-patch official news preserved.
+    updated_ids = {p["id"] for p in patches}
+    retained = [a for a in retained if a.get("id") not in updated_ids]
     data["articles"] = patches + retained
     data.setdefault("source", {})["patchNotesUrl"] = INDEX_URL
     data["source"]["patchNotesCheckedAt"] = datetime.now(timezone.utc).isoformat()
