@@ -44,12 +44,12 @@ def main():
             image = ""
             if photo:
                 style = photo.get("style", "")
-                match = re.search(r"background-image:\\s*url\\(['\"]?([^'\"\\)]+)", style)
+                match = re.search(r"background-image:\s*url\(['\"]?([^'\"\)]+)", style)
                 if match:
                     image = urljoin(URL, match.group(1))
             video = message.select_one(".tgme_widget_message_video_thumb")
             if not image and video:
-                match = re.search(r"background-image:\\s*url\\(['\"]?([^'\"\\)]+)", video.get("style", ""))
+                match = re.search(r"background-image:\s*url\(['\"]?([^'\"\)]+)", style)
                 if match:
                     image = urljoin(URL, match.group(1))
             time_node = message.select_one("time")
@@ -76,7 +76,7 @@ def main():
         status = "error"
         # Preserve previously fetched data on transient network errors.
         existing = OUT.read_text(encoding="utf-8") if OUT.exists() else ""
-        match = re.search(r"window\\.UPDATIQ_COMMUNITY_NEWS\\s*=\\s*(\\{.*\\});?\\s*$", existing, re.S)
+        match = re.search(r"window\.UPDATIQ_COMMUNITY_NEWS\s*=\s*(\{.*\});?\s*$", existing, re.S)
         if match:
             try:
                 previous = json.loads(match.group(1))
