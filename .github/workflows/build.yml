@@ -2,6 +2,8 @@ name: Build UPDATIQ APK
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - 'app/src/main/assets/community-news.js'
   workflow_dispatch:
   schedule:
     - cron: '17 */6 * * *'
