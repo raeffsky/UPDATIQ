@@ -154,8 +154,7 @@ private fun OverviewScreen(onOpen: (AppTab) -> Unit, onSearch: () -> Unit) {
                             modifier = Modifier.border(1.dp, Accent.copy(alpha = .35f), CircleShape).padding(horizontal = 9.dp, vertical = 5.dp))
                     }
                     Spacer(Modifier.height(24.dp))
-                    Text("Мета меняется.
-Будь на шаг впереди.", color = Ink, fontSize = 24.sp, lineHeight = 28.sp, fontWeight = FontWeight.Bold)
+                    Text("Мета меняется.\nБудь на шаг впереди.", color = Ink, fontSize = 24.sp, lineHeight = 28.sp, fontWeight = FontWeight.Bold)
                     Spacer(Modifier.height(8.dp))
                     Text("Отслеживай силу героев, приоритеты пиков и контрпики на основе актуальных данных.", color = Color(0xFFB0BBAF), fontSize = 12.sp, lineHeight = 18.sp)
                     Spacer(Modifier.height(20.dp))
