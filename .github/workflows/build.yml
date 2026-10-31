@@ -316,7 +316,7 @@ jobs:
           UPDATIQ_KEYSTORE_PASSWORD: ${{ secrets.UPDATIQ_KEYSTORE_PASSWORD }}
           UPDATIQ_KEY_ALIAS: ${{ secrets.UPDATIQ_KEY_ALIAS }}
           UPDATIQ_KEY_PASSWORD: ${{ secrets.UPDATIQ_KEY_PASSWORD }}
-        run: gradle --no-daemon assembleRelease
+        run: gradle --no-daemon --max-workers=2 assembleRelease
       - name: Upload signed APK
         uses: actions/upload-artifact@v4
         with:
