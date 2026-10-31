@@ -316,7 +316,27 @@ jobs:
           UPDATIQ_KEYSTORE_PASSWORD: ${{ secrets.UPDATIQ_KEYSTORE_PASSWORD }}
           UPDATIQ_KEY_ALIAS: ${{ secrets.UPDATIQ_KEY_ALIAS }}
           UPDATIQ_KEY_PASSWORD: ${{ secrets.UPDATIQ_KEY_PASSWORD }}
-        run: gradle --no-daemon --max-workers=2 assembleRelease
+        run: |
+          set -euo pipefail
+          gradle --no-daemon --max-workers=2 assembleRelease
+          UNSIGNED_APK="app/build/outputs/apk/release/app-release-unsigned.apk"
+          if [ ! -s "$UNSIGNED_APK" ]; then
+            echo "::error::Expected unsigned release APK was not produced."
+            find app/build/outputs -type f -name '*.apk' -print
+            exit 1
+          fi
+          BUILD_TOOLS="$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -n 1)"
+          "$BUILD_TOOLS/zipalign" -f -v 4 "$UNSIGNED_APK" app/build/outputs/apk/release/app-release-aligned.apk
+          "$BUILD_TOOLS/apksigner" sign \
+            --ks "$UPDATIQ_KEYSTORE_FILE" \
+            --ks-key-alias "$UPDATIQ_KEY_ALIAS" \
+            --ks-pass "env:UPDATIQ_KEYSTORE_PASSWORD" \
+            --key-pass "env:UPDATIQ_KEY_PASSWORD" \
+            --out app/build/outputs/apk/release/app-release.apk \
+            app/build/outputs/apk/release/app-release-aligned.apk
+          "$BUILD_TOOLS/apksigner" verify --verbose --print-certs app/build/outputs/apk/release/app-release.apk
+          "$BUILD_TOOLS/aapt" dump badging app/build/outputs/apk/release/app-release.apk | head -n 5
+
       - name: Locate and normalize release APK
         shell: bash
         run: |
