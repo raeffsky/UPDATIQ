@@ -30,6 +30,44 @@ function checkAppUpdate(){const status=document.getElementById('updateStatus');i
 .subtabs button.active { box-shadow: inset 0 0 0 1px rgba(132, 190, 255, .18), inset 0 0 12px rgba(50, 130, 246, .18) !important; }
 .nav.active { box-shadow: none !important; }
 .more-heading{margin:4px 0 22px}.more-heading h2{font-size:28px;margin:7px 0 4px}.more-heading p{margin:0;color:var(--muted);font-size:12px}.more-group{margin-bottom:22px}.more-group-title{font-size:9px;letter-spacing:1.5px;font-weight:850;color:#7185a5;margin:0 0 9px 4px}.more-list{border:1px solid var(--line);border-radius:18px;background:linear-gradient(135deg,#111d31,#0a1221);overflow:hidden}.more-row{width:100%;display:flex;align-items:center;gap:12px;text-align:left;padding:12px;background:transparent;min-height:70px}.more-row+.more-row{border-top:1px solid rgba(45,64,94,.65)}.more-icon{width:42px;height:42px;flex:0 0 42px;border-radius:13px;display:grid;place-items:center;border:1px solid #6e91c333}.more-icon iconify-icon{width:22px;height:22px}.more-icon.blue{background:linear-gradient(145deg,#1c3b64,#15213b);color:#79b8ff}.more-icon.purple{background:linear-gradient(145deg,#302750,#1c1d38);color:#c2a4ff}.more-icon.green{background:linear-gradient(145deg,#173b38,#13272e);color:#6ce0bd}.more-icon.orange{background:linear-gradient(145deg,#3d3025,#272234);color:#ffc08b}.more-copy{display:flex;flex:1;min-width:0;flex-direction:column;gap:5px}.more-copy strong,.more-update-info strong{font-size:13px;font-weight:750}.more-copy small,.more-update-info small{font-size:10px;line-height:1.45;color:var(--muted)}.more-arrow{width:17px;color:#7185a5}.version-pill{font-size:10px;font-weight:800;color:#91bfff;background:#1a2d49;border:1px solid #2b456b;border-radius:8px;padding:6px 8px}.more-update{padding:14px;border:1px solid #29466b;border-radius:18px;background:linear-gradient(120deg,#122440,#11172b 75%,#211b3c);margin-bottom:8px}.more-source-card{display:flex;align-items:center;gap:10px;margin-top:14px;padding:12px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(120deg,#101b30,#0b1323)}.more-source-icon{width:38px;height:38px;display:grid;place-items:center;flex-shrink:0;border-radius:11px;background:#172b4a;color:#5dd8ff;font-size:20px}.more-source-copy{display:flex;flex:1;min-width:0;flex-direction:column;gap:4px}.more-source-copy strong{font-size:12px}.more-source-copy small{font-size:10px;color:var(--muted)}.more-source-card .primary{padding:9px 10px;font-size:10px;white-space:nowrap}.more-update-info{display:flex;align-items:center;gap:11px;margin-bottom:13px}.more-update-info>span:last-child{display:flex;flex-direction:column;gap:4px}.more-update-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;padding:12px}.more-panel{margin-top:12px;padding:15px;border:1px solid var(--line);border-radius:16px;background:#0d1729;color:var(--muted);font-size:12px;line-height:1.6}.more-panel h3{margin:0 0 8px;color:var(--text);font-size:15px}.more-panel button{margin-top:8px}
+
+/* Meta: compact filters, clear tier hierarchy and readable live metrics. */
+.tier-toolbar{display:flex;align-items:center;gap:8px;margin:10px 0 8px}
+.tier-search{display:flex;align-items:center;gap:9px;flex:1;min-width:0;padding:0 12px;border:1px solid #263d5e;border-radius:12px;background:#0b1527;color:#79cfff}
+.tier-search iconify-icon{font-size:17px;flex-shrink:0}
+.tier-search input{width:100%;min-width:0;height:42px;padding:0;border:0!important;outline:0;background:transparent!important;box-shadow:none!important;color:#eef5ff;font:inherit;font-size:12px}
+.tier-search input::placeholder{color:#7185a5}
+.tier-clear{height:42px;padding:0 11px;border:1px solid #263d5e;border-radius:11px;background:#111f35;color:#9db4d3;font-size:11px;font-weight:750}
+.tier-hint{margin:5px 2px 10px;color:#8296b6;font-size:10px;line-height:1.5}
+.tier-summary{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 12px}
+.tier-summary span{display:inline-flex;align-items:center;gap:5px;padding:6px 8px;border:1px solid #263b59;border-radius:9px;background:#101c30;color:#9fb2ce;font-size:10px;font-weight:750}
+.tier-summary strong{color:#f1f6ff;font-size:11px}
+.tier-summary .tier-summary-total{margin-left:auto;color:#5dd8ff}
+.tierrow{padding:9px;border:1px solid #1c2f4b;border-radius:14px;background:rgba(13,23,41,.66)}
+.tierrow+.tierrow{margin-top:9px}
+.tierrow .tierlabel{width:34px;min-width:34px;min-height:34px;border-radius:9px;align-self:flex-start}
+.tierrow .heroes{gap:8px;scroll-snap-type:x proximity;padding:1px 1px 5px}
+.tier-hero-card{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:5px;flex:0 0 88px;min-width:88px;max-width:88px;min-height:137px;padding:9px 6px 8px;border:1px solid #263c5d;border-radius:12px;background:linear-gradient(150deg,#14233a,#0d1729);color:#eaf2ff;text-align:center;scroll-snap-align:start}
+.tier-hero-card:active{border-color:#55b9f5;background:#172c49}
+.tier-hero-card .tier-picture{display:grid;place-items:center;width:54px;height:54px;overflow:hidden;border:1px solid #344e73;border-radius:12px;background:#172944}
+.tier-hero-card .tier-portrait{display:block;width:100%;height:100%;object-fit:cover;border-radius:0}
+.tier-hero-card .tier-fallback{display:none;width:25px;height:25px;margin:0;color:#8ba8cc}
+.tier-hero-card strong{display:block;width:100%;font-size:10px;line-height:1.25;overflow-wrap:anywhere}
+.tier-hero-card .tier-stat-primary{display:block;color:#66d5ff;font-size:9px;font-weight:850;line-height:1.3}
+.tier-hero-card .tier-stat-secondary{display:block;color:#91a4c2;font-size:8px;line-height:1.35;white-space:normal}
+.tier-empty{padding:20px 14px;border:1px dashed #2b4262;border-radius:14px;background:#0e192b;color:#8da1c0;text-align:center;font-size:12px;line-height:1.5}
+.tier-stale{color:#ffc477!important}
+@media(max-width:380px){.tier-toolbar{gap:6px}.tier-clear{padding:0 8px}.tier-hero-card{flex-basis:82px;min-width:82px;max-width:82px}.tierrow{padding:7px}}
+/* Trainer: personal match log and less cramped modal layout. */
+.coach-review-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0}
+.coach-review-stat{padding:11px 9px;border:1px solid #263d5c;border-radius:12px;background:#101d31;text-align:center}
+.coach-review-stat strong{display:block;color:#eff6ff;font-size:18px;line-height:1.2}
+.coach-review-stat span{display:block;margin-top:4px;color:#8fa5c4;font-size:9px;line-height:1.3}
+.coach-modal{max-height:min(86dvh,760px)}
+.coach-modal-body{padding:15px}
+.coach-modal .coach-result p{color:#c4d4eb;font-size:12px;line-height:1.55}
+@media(max-width:380px){.coach-review-stats{gap:6px}.coach-review-stat{padding:9px 5px}.coach-review-stat strong{font-size:16px}}
+
 /* UPDATIQ unified native-control and dialog theme */
 
 /* Coach tools use one compact modal instead of stretching the page */
@@ -105,7 +143,7 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:#55c9f4;box-sh
 <div class="sectionhead"><h2>Тренер</h2><span class="tag">UPDATIQ · GAME GUIDE</span></div>
 <div class="demo-card" style="border-color:#403451;background:radial-gradient(ellipse at 90% 0%,rgba(137,82,205,.22),transparent 55%),linear-gradient(145deg,#17141f,#111116);margin-bottom:16px">
 <div style="display:flex;gap:12px;align-items:center"><iconify-icon icon="tabler:brain" style="font-size:36px;color:#c7a3ff"></iconify-icon><div><div class="eyebrow">ТВОЙ ПОМОЩНИК</div><h2 style="margin:3px 0">Играй умнее.</h2></div></div>
-<p>Подготовься к матчу, разбери сложную ситуацию и прокачай игровые решения.</p>
+<p>Подготовься к матчу, разбери сложную ситуацию и отслеживай свои игровые привычки. Советы учитывают выбранные роль и ранг.</p>
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><label>Твой ранг<select id="coachRank" class="searchbox" style="width:100%;margin-top:6px" onchange="saveCoachProfile()"><option>Воин</option><option>Элита</option><option>Мастер</option><option>Грандмастер</option><option>Эпик</option><option>Легенда</option><option>Мифик</option><option>Мифическая слава</option><option>Мифический почёт</option><option>Мифическая бессмертность</option></select></label><label>Основная роль<select id="coachRole" class="searchbox" style="width:100%;margin-top:6px" onchange="saveCoachProfile()"><option>Лес</option><option>Мид</option><option>Золото</option><option>Опыт</option><option>Роум</option></select></label></div></div>
 <div class="sectionhead"><h3>Что тренируем сегодня?</h3></div>
 <div class="demo-grid" style="grid-template-columns:repeat(2,minmax(0,1fr));gap:10px">
@@ -114,7 +152,7 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:#55c9f4;box-sh
 <button class="demo-card" style="text-align:left" onclick="openCoachTool('situations')"><iconify-icon icon="tabler:target" style="font-size:24px;color:#b994f4"></iconify-icon><strong>Игровые ситуации</strong><p class="smallnote">Выбери лучшее решение</p></button>
 <button class="demo-card" style="text-align:left" onclick="openCoachTool('progress')"><iconify-icon icon="tabler:chart-no-axes-combined" style="font-size:24px;color:#b994f4"></iconify-icon><strong>Мой прогресс</strong><p class="smallnote">Цели и тренировки</p></button></div>
 <div id="coachToolPanel" style="margin-top:16px"></div>
-<div class="demo-card" style="margin-top:16px;border-color:#3e3152"><strong><iconify-icon icon="tabler:bulb" style="color:#d4b36d"></iconify-icon> Совет тренера</strong><p>Если враги пропали с карты, не проверяй кусты в одиночку. Отступи к безопасной позиции, проверь мини-карту и дождись информации от команды.</p><small class="smallnote">Общий совет, не статистический прогноз.</small></div></section><section id="meta" class="page"><div class="sectionhead"><h2>Мета MLBB</h2><span class="tag">MLBB NEXUS · LIVE</span></div><div class="subtabs"><button class="active" onclick="metaTab(this,'tiers')">Тир-листы</button></div><div id="tiers"><p class="demo-label">Выбери формат и критерий тир-листа</p><div class="profile-tabs tier-mode-tabs"><button class="active" onclick="selectTierMode(this,'stats')">По статистике</button><button onclick="selectTierMode(this,'tournament')">Турнирный</button></div><div id="tierMetricControls" class="chips tier-metric-controls"><button class="chip active" onclick="selectTierMetric(this,'winRate')">Винрейт</button><button class="chip" onclick="selectTierMetric(this,'banRate')">Банрейт</button><button class="chip" onclick="selectTierMetric(this,'pickRate')">Пикрейт</button></div><div class="profile-tabs tier-lane-tabs"><button class="active" onclick="selectRole(this,'Все роли')">Все роли</button><button onclick="selectRole(this,'EXP')">EXP</button><button onclick="selectRole(this,'Лес')">Лес</button><button onclick="selectRole(this,'Мид')">Мид</button><button onclick="selectRole(this,'Золото')">Золото</button><button onclick="selectRole(this,'Роум')">Роум</button></div><div id="tierLaneHeading" class="profile-section-title"><h3>Общий тир-лист</h3><span class="tag">S–F</span></div><div id="tierRows" class="tiers" style="margin-top:12px"></div><div id="tierDetail"></div></div><div id="statsMeta" style="display:none"><p class="demo-label">Реальная статистика MLBB Nexus</p><div id="demoStats" class="demo-grid"></div></div><div id="builds" style="display:none"><p class="demo-label">Сборки из MLBBHub</p><div id="demoBuilds" class="demo-grid"></div></div><p id="tierDataStamp" class="smallnote">Источник: MLBB Nexus API · синхронизация данных…</p></section>
+<div class="demo-card" style="margin-top:16px;border-color:#3e3152"><strong><iconify-icon icon="tabler:bulb" style="color:#d4b36d"></iconify-icon> Совет тренера</strong><p>Если враги пропали с карты, не проверяй кусты в одиночку. Отступи к безопасной позиции, проверь мини-карту и дождись информации от команды.</p><small class="smallnote">Общий совет, не статистический прогноз.</small></div></section><section id="meta" class="page"><div class="sectionhead"><h2>Мета MLBB</h2><span class="tag">MLBB NEXUS · LIVE</span></div><div class="subtabs"><button class="active" onclick="metaTab(this,'tiers')">Тир-листы</button></div><div id="tiers"><p class="demo-label">Рейтинги героев по актуальной статистике и профессиональным матчам</p><div class="profile-tabs tier-mode-tabs"><button class="active" onclick="selectTierMode(this,'stats')">По статистике</button><button onclick="selectTierMode(this,'tournament')">Турнирный</button></div><div id="tierMetricControls" class="chips tier-metric-controls"><button class="chip active" onclick="selectTierMetric(this,'winRate')">Винрейт</button><button class="chip" onclick="selectTierMetric(this,'banRate')">Банрейт</button><button class="chip" onclick="selectTierMetric(this,'pickRate')">Пикрейт</button></div><div class="profile-tabs tier-lane-tabs"><button class="active" onclick="selectRole(this,'Все роли')">Все роли</button><button onclick="selectRole(this,'EXP')">EXP</button><button onclick="selectRole(this,'Лес')">Лес</button><button onclick="selectRole(this,'Мид')">Мид</button><button onclick="selectRole(this,'Золото')">Золото</button><button onclick="selectRole(this,'Роум')">Роум</button></div><div id="tierLaneHeading" class="profile-section-title"><h3>Общий тир-лист</h3><span class="tag">S–D</span></div><div class="tier-toolbar"><label class="tier-search"><iconify-icon icon="tabler:search" aria-hidden="true"></iconify-icon><input id="tierHeroSearch" type="search" autocomplete="off" placeholder="Найти героя в тир-листе…" oninput="renderTiers()"></label><button class="tier-clear" type="button" onclick="clearTierSearch()">Сбросить</button></div><p id="tierMetricHint" class="tier-hint">Ранжирование по винрейту. Тиры соответствуют распределению источника.</p><div id="tierSummary" class="tier-summary"></div><div id="tierRows" class="tiers" style="margin-top:12px"></div><div id="tierDetail"></div></div><div id="statsMeta" style="display:none"><p class="demo-label">Реальная статистика MLBB Nexus</p><div id="demoStats" class="demo-grid"></div></div><div id="builds" style="display:none"><p class="demo-label">Сборки из MLBBHub</p><div id="demoBuilds" class="demo-grid"></div></div><p id="tierDataStamp" class="smallnote">Источник: MLBB Nexus API · синхронизация данных…</p></section>
 <section id="heroes" class="page"><div class="sectionhead"><h2>Герои</h2><span class="tag">КАТАЛОГ · LIVE DATA</span></div><input id="heroSearch" class="searchbox demo-search" placeholder="Найти героя…" oninput="renderHeroes()"><div class="chips"><button class="chip active" onclick="filterHeroes(this,'all')">Все</button><button class="chip" onclick="filterHeroes(this,'EXP')">EXP</button><button class="chip" onclick="filterHeroes(this,'Лес')">Лес</button><button class="chip" onclick="filterHeroes(this,'Мид')">Мид</button><button class="chip" onclick="filterHeroes(this,'Золото')">Золото</button><button class="chip" onclick="filterHeroes(this,'Роум')">Роум</button><button class="chip" onclick="filterHeroes(this,'favorites')">Избранное</button></div><p class="demo-label">Рейтинги и статистика из MLBB Nexus; «—» означает отсутствие данных</p><div id="heroDetail"></div><div id="heroGrid" class="demo-hero-grid"></div></section>
 <section id="detail" class="page"><div id="detailContent"></div></section>
 <section id="more" class="page"><div class="more-heading"><div><div class="eyebrow">UPDATIQ · ИНСТРУМЕНТЫ</div><h2>Ещё</h2><p>Инструменты и информация</p></div></div><section class="more-group"><div class="more-group-title">ИНСТРУМЕНТЫ</div><div class="more-list"><button class="more-row" onclick="openMorePanel('sources')"><span class="more-icon blue"><iconify-icon icon="tabler:database"></iconify-icon></span><span class="more-copy"><strong>Источники</strong><small>Сайты, Telegram, YouTube и статистика</small></span><iconify-icon class="more-arrow" icon="tabler:chevron-right"></iconify-icon></button><button class="more-row" onclick="openMorePanel('settings')"><span class="more-icon purple"><iconify-icon icon="tabler:settings"></iconify-icon></span><span class="more-copy"><strong>Настройки</strong><small>Язык интерфейса и уведомления</small></span><iconify-icon class="more-arrow" icon="tabler:chevron-right"></iconify-icon></button></div></section><section class="more-group"><div class="more-group-title">ПРИЛОЖЕНИЕ</div><div class="more-list"><button class="more-row" onclick="openMorePanel('about')"><span class="more-icon green"><iconify-icon icon="tabler:info-circle"></iconify-icon></span><span class="more-copy"><strong>О приложении</strong><small>Независимый информационный агрегатор</small></span><span class="version-pill">v0.1.0</span></button><button class="more-row" onclick="openMorePanel('support')"><span class="more-icon orange"><iconify-icon icon="tabler:message-circle"></iconify-icon></span><span class="more-copy"><strong>Поддержка и обратная связь</strong><small>Сообщить об ошибке или предложить идею</small></span><iconify-icon class="more-arrow" icon="tabler:chevron-right"></iconify-icon></button></div></section><section class="more-update"><div class="more-update-info"><span class="more-icon blue"><iconify-icon icon="tabler:refresh"></iconify-icon></span><span><strong>Обновление приложения</strong><small id="updateStatus" aria-live="polite">Установлена версия 0.1.0</small></span></div><button class="primary more-update-btn" onclick="checkAppUpdate()">Проверить обновления <iconify-icon icon="tabler:download"></iconify-icon></button></section><div id="morePanel" class="more-panel" hidden></div></section>
@@ -186,74 +224,113 @@ function setPatchTab(){renderPatchDetail()}
 let tierRole="Все роли";let tierMode="stats";let tierMetric="winRate";
 const laneTitles={"Все роли":"Общий тир-лист","EXP":"EXP-лейн","Лес":"Лес","Мид":"Мид-лейн","Золото":"Золотая линия","Роум":"Роум"};
 const nexusLaneKeys={"Все роли":"all","EXP":"exp","Лес":"jungle","Мид":"mid","Золото":"gold","Роум":"roam"};
-function renderTiers(){
- const live=window.UPDATIQ_MLBBNEXUS_TIERS;
- const laneKey=nexusLaneKeys[tierRole]||"all";
- const lane=live&&live.lanes&&live.lanes[laneKey];
- const rows=document.getElementById("tierRows");
- const heading=document.getElementById("tierLaneHeading");
- const stamp=document.getElementById("tierDataStamp");
- if(!rows||!heading){
-   if(stamp)stamp.textContent="Ошибка отображения: не найдены элементы тир-листа";
-   return;
+const tierMetricLabels={winRate:"Винрейт",pickRate:"Пикрейт",banRate:"Банрейт"};
+function tierMetricNumber(hero,key){const raw=hero&&hero[key];if(raw===null||raw===undefined||raw==="")return null;const value=Number(raw);return Number.isFinite(value)?value:null}
+function tierPercent(value,digits){return value===null||value===undefined||!Number.isFinite(Number(value))?"—":Number(value).toFixed(digits)+"%"}
+function tierBucket(index,total){const ratio=index/Math.max(total,1);return ratio<.10?"S":ratio<.30?"A":ratio<.70?"B":ratio<.90?"C":"D"}
+function tierSearchMatches(hero,query){return !query||String(hero.name||"").toLocaleLowerCase("ru-RU").includes(query)||String(hero.slug||"").toLowerCase().includes(query)}
+function renderTierHeroCard(hero,mode){
+ const name=String(hero.name||hero.slug||"Неизвестный герой"),slug=String(hero.slug||hero.rankedSlug||"");
+ const remote=String(hero.image||""),local=slug?"hero-images/"+slug+".webp":remote;
+ const picture=remote?'<img class="tier-portrait" src="'+escapeNews(local)+'" data-remote="'+escapeNews(remote)+'" alt="" loading="lazy" onerror="tierProfileImageError(this)"><iconify-icon class="tier-fallback" icon="tabler:shield-question"></iconify-icon>':'<iconify-icon class="tier-fallback" style="display:inline-block" icon="tabler:shield-question"></iconify-icon>';
+ let primary="",secondary="";
+ if(mode==="tournament"){
+  primary="Проф. присутствие "+tierPercent(tierMetricNumber(hero,"proPresence"),1);
+  secondary="WR "+tierPercent(tierMetricNumber(hero,"winRate"),1)+" · Пик "+(hero.picks==null?"—":hero.picks)+" · Бан "+(hero.bans==null?"—":hero.bans);
+ }else{
+  const selected=tierMetric,digits=selected==="pickRate"?2:1;
+  primary=(tierMetricLabels[selected]||"Показатель")+" "+tierPercent(tierMetricNumber(hero,selected),digits);
+  secondary="WR "+tierPercent(tierMetricNumber(hero,"winRate"),1)+" · Пик "+tierPercent(tierMetricNumber(hero,"pickRate"),2)+" · Бан "+tierPercent(tierMetricNumber(hero,"banRate"),1);
  }
- if(tierMode!=="tournament"&&(!lane||!Array.isArray(lane.heroes)||!lane.heroes.length)){
-   heading.innerHTML="<h3>"+(laneTitles[tierRole]||"Общий тир-лист")+"</h3><span class=\"tag\">Нет данных</span>";
-   rows.innerHTML='<div class="demo-empty">Статистика пока недоступна. Проверь подключение и обнови приложение. Если ошибка повторится, сообщи об этом через раздел «Поддержка».</div>';
-   if(stamp)stamp.textContent=live&&live.updatedAt?"Источник: MLBB Nexus API · данные получены, но список пуст":"Ошибка загрузки статистики MLBB Nexus API";
-   return;
- }
- if(tierMode==="tournament"){
-   const tournament=window.UPDATIQ_MLBB_TOURNAMENT;
-   if(!tournament||!Array.isArray(tournament.heroes)||!tournament.heroes.length){
-     heading.innerHTML="<h3>"+laneTitles[tierRole]+" · Турнирный тир-лист</h3><span class=\"tag\">Нет данных</span>";
-     rows.innerHTML='<div class="demo-empty">Турнирная статистика сейчас недоступна. Повтори проверку после следующей сборки.</div>';
-     if(stamp)stamp.textContent="Источник турниров: MLBBDex / Liquipedia · данные не загружены";
-     return;
-   }
-   const allowed=new Set(((lane&&lane.heroes)||[]).map(h=>h.slug).filter(Boolean));
-   const tournamentHeroes=tournament.heroes.filter(h=>tierRole==="Все роли"||allowed.has(h.slug||h.rankedSlug));
-   const roleSorted=[...tournamentHeroes].sort((a,b)=>(Number(b.score)||0)-(Number(a.score)||0));
-   const roleTierAt=i=>i<Math.ceil(roleSorted.length*.10)?"S":i<Math.ceil(roleSorted.length*.30)?"A":i<Math.ceil(roleSorted.length*.70)?"B":i<Math.ceil(roleSorted.length*.90)?"C":"D";
-   roleSorted.forEach((h,i)=>h._roleTier=roleTierAt(i));
-   if(!tournamentHeroes.length){
-     heading.innerHTML="<h3>"+laneTitles[tierRole]+" · Турнирный тир-лист</h3><span class=\"tag\">Нет героев</span>";
-     rows.innerHTML='<div class="demo-empty">Для этой роли пока недостаточно профессиональных матчей в источнике.</div>';
-     if(stamp)stamp.textContent="Источник: MLBBDex / Liquipedia · "+tournament.games+" матчей";
-     return;
-   }
-   heading.innerHTML="<h3>"+laneTitles[tierRole]+" · Турнирный тир-лист</h3><span class=\"tag\">"+tournament.games+" матчей</span>";
-   rows.innerHTML=["S","A","B","C","D"].map(t=>{
-     const heroes=roleSorted.filter(h=>h._roleTier===t);
-     const content=heroes.map(h=>{
-       const slug=h.slug||h.rankedSlug||"";
-       const localImage=slug?"hero-images/"+slug+".webp":"";
-       const image=h.image?'<img class="tier-portrait" src="'+localImage+'" data-remote="'+h.image+'" alt="" loading="lazy" onerror="if(this.dataset.remote&&this.src!==this.dataset.remote){this.src=this.dataset.remote}else{this.style.display=\'none\';this.nextElementSibling.style.display=\'block\'}"><iconify-icon class="tier-fallback" style="display:none" icon="tabler:shield-question"></iconify-icon>':'<iconify-icon class="tier-fallback" icon="tabler:shield-question"></iconify-icon>';
-       const win=h.winRate==null?"—":Number(h.winRate).toFixed(1)+"%";
-       const stats='<small>Присутствие '+Number(h.proPresence||0).toFixed(1)+'% · Победы '+win+'<br>Пик '+(h.picks==null?'—':h.picks)+' · Бан '+(h.bans==null?'—':h.bans)+'</small>';
-       const safeName=String(h.name||slug).replace(/\\/g,"\\\\").replace(/'/g,"\\'");
-       return '<button class="demo-tier-hero" onclick="openTierHero(\''+safeName+'\',\''+slug+'\')">'+image+String(h.name||slug)+stats+'</button>';
-     }).join("");
-     return '<div class="tierrow"><div class="tierlabel '+t.toLowerCase()+'">'+t+'</div><div class="heroes">'+(content||'<span class="demo-empty">Нет героев в этом тире</span>')+'</div></div>';
-   }).join("");
-   if(stamp)stamp.textContent="Источник: MLBBDex / Liquipedia (CC BY-SA 3.0) · "+tournament.games+" матчей · "+tournament.heroCount+" героев · окно "+tournament.windowDays+" дней · обновлено "+(tournament.updatedAt?new Date(tournament.updatedAt).toLocaleString("ru-RU"):"время неизвестно");
-   return;
- }
- if(tierMode==="stats"){const sorted=[...lane.heroes].sort((a,b)=>(Number(b[tierMetric])||0)-(Number(a[tierMetric])||0));const tierAt=i=>i<Math.ceil(sorted.length*.2)?"S":i<Math.ceil(sorted.length*.4)?"A":i<Math.ceil(sorted.length*.6)?"B":i<Math.ceil(sorted.length*.8)?"C":"D";sorted.forEach((h,i)=>h._metricTier=tierAt(i));lane.heroes=sorted;}
- const counts={};["S","A","B","C","D"].forEach(t=>counts[t]=lane.heroes.filter(h=>h.tier===t).length);
- heading.innerHTML="<h3>"+laneTitles[tierRole]+"</h3><span class=\"tag\">"+lane.heroes.length+" героев · Rone Arena</span>";
- rows.innerHTML=["S","A","B","C","D"].map(t=>{
-   const heroes=lane.heroes.filter(h=>(tierMode==="stats"?(h._metricTier||h.tier):h.tier)===t);
-   const content=heroes.map(h=>{
-     const localImage=h.slug?("hero-images/"+h.slug+".webp"):"";const image=h.image?'<img class="tier-portrait" src="'+localImage+'" data-remote="'+h.image+'" alt="" loading="lazy" onerror="if(this.dataset.remote&&this.src!==this.dataset.remote){this.src=this.dataset.remote}else{this.style.display=\'none\';this.nextElementSibling.style.display=\'block\'}"><iconify-icon class="tier-fallback" style="display:none" icon="tabler:shield-question"></iconify-icon>':'<iconify-icon class="tier-fallback" icon="tabler:shield-question"></iconify-icon>';
-     const stats='<small>WR '+(h.winRate==null?'—':h.winRate.toFixed(1)+'%')+' · Pick '+(h.pickRate==null?'—':h.pickRate.toFixed(2)+'%')+' · Ban '+(h.banRate==null?'—':h.banRate.toFixed(1)+'%')+'</small>';
-     return '<button class="demo-tier-hero" onclick="openTierHero(\''+h.name.replace(/\\/g,"\\\\").replace(/'/g,"\\'")+'\',\''+h.slug+'\')">'+image+h.name+stats+'</button>';
-   }).join("");
-   return '<div class="tierrow"><div class="tierlabel '+t.toLowerCase()+'">'+t+'</div><div class="heroes">'+(content||'<span class="demo-empty">Нет героев в этом тире</span>')+'</div></div>';
- }).join("");
- if(stamp)stamp.textContent="Источник: MLBB Nexus API · "+lane.heroes.length+" героев · все ранги · 7 дней · обновлено "+(live.updatedAt?new Date(live.updatedAt).toLocaleString("ru-RU"):"время неизвестно");
+ return '<button type="button" class="demo-tier-hero tier-hero-card" data-name="'+escapeNews(name)+'" data-slug="'+escapeNews(slug)+'" aria-label="Открыть профиль героя '+escapeNews(name)+'" onclick="openTierHero(this.dataset.name,this.dataset.slug,\'meta\')"><span class="tier-picture">'+picture+'</span><strong>'+escapeNews(name)+'</strong><span class="tier-stat-primary">'+escapeNews(primary)+'</span><small class="tier-stat-secondary">'+escapeNews(secondary)+'</small></button>';
 }
-function selectTierMode(btn,mode){tierMode=mode;btn.parentElement.querySelectorAll("button").forEach(x=>x.classList.toggle("active",x===btn));document.getElementById("tierMetricControls").style.display=mode==="stats"?"flex":"none";renderTiers()}function selectTierMetric(btn,metric){tierMetric=metric;btn.parentElement.querySelectorAll("button").forEach(x=>x.classList.toggle("active",x===btn));renderTiers()}function selectRole(btn,role){tierRole=role;btn.parentElement.querySelectorAll("button").forEach(x=>x.classList.toggle("active",x===btn));renderTiers()}
+function renderTierGroups(heroes,mode){
+ const order=["S","A","B","C","D"];let html="";
+ for(const tier of order){
+  const group=heroes.filter(hero=>hero._displayTier===tier);
+  if(!group.length)continue;
+  html+='<div class="tierrow"><div class="tierlabel '+tier.toLowerCase()+'">'+tier+'</div><div class="heroes">'+group.map(hero=>renderTierHeroCard(hero,mode)).join("")+'</div></div>';
+ }
+ return html||'<div class="tier-empty">По этому запросу герои не найдены. Измени поиск или выбери другую роль.</div>';
+}
+function renderTierSummary(heroes){
+ const order=["S","A","B","C","D"];
+ const chips=order.map(t=>'<span><b class="tierlabel '+t.toLowerCase()+'" style="width:18px;min-width:18px;height:18px;border-radius:5px;font-size:9px">'+t+'</b><strong>'+heroes.filter(h=>h._displayTier===t).length+'</strong></span>').join("");
+ return chips+'<span class="tier-summary-total">'+heroes.length+' героев</span>';
+}
+function updateTierStamp(live,extra){
+ const stamp=document.getElementById("tierDataStamp");if(!stamp)return;
+ const raw=live&&live.updatedAt;const date=raw?new Date(raw):null;const valid=date&&Number.isFinite(date.getTime());
+ const stale=valid&&(Date.now()-date.getTime()>36*60*60*1000);
+ stamp.classList.toggle("tier-stale",!!stale);
+ stamp.textContent="Источник: MLBB Nexus · все ранги · 7 дней · "+(extra?extra+" · ":"")+(valid?"обновлено "+date.toLocaleString("ru-RU"):"время обновления неизвестно")+(stale?" · данные старше 36 часов":"");
+}
+function clearTierSearch(){const input=document.getElementById("tierHeroSearch");if(input)input.value="";renderTiers();if(input)input.focus({preventScroll:true})}
+function renderTiers(){
+ const live=window.UPDATIQ_MLBBNEXUS_TIERS,laneKey=nexusLaneKeys[tierRole]||"all";
+ const lane=live&&live.lanes&&live.lanes[laneKey];
+ const rows=document.getElementById("tierRows"),heading=document.getElementById("tierLaneHeading");
+ const stamp=document.getElementById("tierDataStamp"),summary=document.getElementById("tierSummary");
+ const hint=document.getElementById("tierMetricHint");
+ const search=(document.getElementById("tierHeroSearch")?.value||"").trim().toLocaleLowerCase("ru-RU");
+ const metricControls=document.getElementById("tierMetricControls");
+ if(metricControls)metricControls.style.display=tierMode==="stats"?"flex":"none";
+ if(!rows||!heading){if(stamp)stamp.textContent="Ошибка отображения: не найдены элементы тир-листа";return}
+ if(tierMode==="tournament"){
+  const tournament=window.UPDATIQ_MLBB_TOURNAMENT;
+  if(!tournament||!Array.isArray(tournament.heroes)||!tournament.heroes.length){
+   heading.innerHTML="<h3>"+(laneTitles[tierRole]||"Общий тир-лист")+" · Турнирный тир-лист</h3><span class=\"tag\">Нет данных</span>";
+   rows.innerHTML='<div class="tier-empty">Турнирная статистика сейчас недоступна. Здесь не подставляются рейтинги обычных матчей вместо профессиональных данных.</div>';
+   if(summary)summary.innerHTML="";
+   if(stamp)stamp.textContent="Источник турниров: MLBBDex / Liquipedia · данные не загружены";
+   if(hint)hint.textContent="Профессиональный рейтинг строится отдельно от рейтинга обычных матчей.";
+   return;
+  }
+  const allowed=new Set(((lane&&lane.heroes)||[]).map(h=>h.slug||h.rankedSlug).filter(Boolean));
+  const ranked=tournament.heroes
+   .filter(h=>tierRole==="Все роли"||allowed.has(h.slug||h.rankedSlug))
+   .map(h=>({...h}))
+   .sort((a,b)=>(Number(b.score)||0)-(Number(a.score)||0));
+  ranked.forEach((hero,index)=>hero._displayTier=tierBucket(index,ranked.length));
+  const filtered=ranked.filter(hero=>tierSearchMatches(hero,search));
+  heading.innerHTML="<h3>"+(laneTitles[tierRole]||"Общий тир-лист")+" · Турнирный тир-лист</h3><span class=\"tag\">"+(tournament.games||0)+" матчей</span>";
+  if(summary)summary.innerHTML=renderTierSummary(filtered);
+  rows.innerHTML=renderTierGroups(filtered,"tournament");
+  if(hint)hint.textContent="Профессиональные матчи: рейтинг учитывает турнирные показатели, а не статистику обычной очереди.";
+  updateTierStamp({updatedAt:tournament.updatedAt},"MLBBDex / Liquipedia · "+(tournament.games||0)+" матчей · "+(tournament.heroCount||ranked.length)+" героев");
+  return;
+ }
+ if(!lane||!Array.isArray(lane.heroes)||!lane.heroes.length){
+  heading.innerHTML="<h3>"+(laneTitles[tierRole]||"Общий тир-лист")+"</h3><span class=\"tag\">Нет данных</span>";
+  rows.innerHTML='<div class="tier-empty">Статистика для этой роли пока недоступна. Проверь подключение и обнови приложение после следующей синхронизации данных.</div>';
+  if(summary)summary.innerHTML="";
+  if(stamp)stamp.textContent=live&&live.updatedAt?"Источник: MLBB Nexus · данные получены, но список пуст":"Ошибка загрузки статистики MLBB Nexus";
+  if(hint)hint.textContent="Тир-лист использует показатели за последние 7 дней; отсутствующие значения не считаются нулём.";
+  return;
+ }
+ const ranked=lane.heroes.map(hero=>({...hero}));
+ ranked.sort((a,b)=>{
+  const av=tierMetricNumber(a,tierMetric),bv=tierMetricNumber(b,tierMetric);
+  if(av===null&&bv===null)return String(a.name||"").localeCompare(String(b.name||""));
+  if(av===null)return 1;if(bv===null)return -1;
+  return bv-av;
+ });
+ if(tierMetric==="winRate"){
+  ranked.forEach(hero=>hero._displayTier=String(hero.tier||"B").toUpperCase());
+ }else{
+  ranked.forEach((hero,index)=>hero._displayTier=tierBucket(index,ranked.length));
+ }
+ const filtered=ranked.filter(hero=>tierSearchMatches(hero,search));
+ const metricLabel=tierMetricLabels[tierMetric]||"Винрейт";
+ heading.innerHTML="<h3>"+(laneTitles[tierRole]||"Общий тир-лист")+"</h3><span class=\"tag\">"+filtered.length+" / "+ranked.length+" героев</span>";
+ if(summary)summary.innerHTML=renderTierSummary(filtered);
+ rows.innerHTML=renderTierGroups(filtered,"stats");
+ if(hint)hint.textContent=tierMetric==="winRate"
+  ?"Тиры S–D взяты из рейтинга источника. Герои отсортированы по винрейту; показатели относятся ко всем рангам за 7 дней."
+  :"Ранжирование по "+metricLabel.toLowerCase()+". Тиры показывают относительное положение героя внутри выбранной роли, а не гарантируют победу.";
+ updateTierStamp(live,"MLBB Nexus · "+(live.rank||"все ранги")+" · "+(live.period==="7d"?"7 дней":live.period||"7 дней"));
+}
+function selectTierMode(btn,mode){tierMode=mode;btn.parentElement.querySelectorAll("button").forEach(x=>x.classList.toggle("active",x===btn));renderTiers()}function selectTierMetric(btn,metric){tierMetric=metric;btn.parentElement.querySelectorAll("button").forEach(x=>x.classList.toggle("active",x===btn));renderTiers()}function selectRole(btn,role){tierRole=role;btn.parentElement.querySelectorAll("button").forEach(x=>x.classList.toggle("active",x===btn));renderTiers()}
 function openTierSource(url){if(!url)return;if(window.AndroidExternal&&typeof window.AndroidExternal.open==="function"){window.AndroidExternal.open(String(url));return}window.open(url,"_blank")}
 function tierProfileImageError(img){if(img.dataset.remote&&img.dataset.remote!==img.src){const remote=img.dataset.remote;img.dataset.remote="";img.src=remote}else{img.style.display="none";if(img.nextElementSibling)img.nextElementSibling.style.display="inline-block"}}
 function openTierHero(name,slug,fromPage){const live=window.UPDATIQ_MLBBNEXUS_TIERS;const lanes=(live&&live.lanes)||{};let hero=null;const foundRoles=[];for(const key of ["exp","jungle","mid","gold","roam","all"]){const lane=lanes[key];const found=(lane&&lane.heroes||[]).find(h=>(h.slug&&h.slug===slug)||h.name===name);if(found){hero=hero||found;if(key!=="all")foundRoles.push(({exp:"EXP",jungle:"Лес",mid:"Мид",gold:"Золото",roam:"Роум"})[key]);}}const roster=(window.UPDATIQ_HERO_BUILDS&&window.UPDATIQ_HERO_BUILDS.heroes)||[];const catalog=roster.find(h=>h.slug===slug||h.name===name);const counterData=window.UPDATIQ_HERO_COUNTERS&&window.UPDATIQ_HERO_COUNTERS.heroes&&window.UPDATIQ_HERO_COUNTERS.heroes[slug];if(!hero&&catalog)hero={name:catalog.name,slug:catalog.slug,image:catalog.image||"",tier:null,winRate:null,pickRate:null,banRate:null};if(!hero){if(slug)window.open("https://mlbbhub.com/heroes/"+encodeURIComponent(slug),"_blank");return;}const role=foundRoles.length?[...new Set(foundRoles)].join(" · "):(counterData&&counterData.role)||"Роль не подтверждена";if(hero.tier==null)hero={...hero,tier:null,winRate:null,pickRate:null,banRate:null};previousDetailPage=fromPage||"meta";const local=hero.slug?"hero-images/"+hero.slug+".webp":"";const sourceUrl="https://mlbbnexus.com/heroes/"+encodeURIComponent(hero.slug);const stats=[["Винрейт",hero.winRate==null?"—":hero.winRate.toFixed(1)+"%"],["Пикрейт",hero.pickRate==null?"—":hero.pickRate.toFixed(2)+"%"],["Банрейт",hero.banRate==null?"—":hero.banRate.toFixed(1)+"%"]];const liveTab=activeProfileTab;const liveTabs=["Обзор","Навыки","Сборки","Контрпики"];let liveBody="";if(liveTab==="Навыки")liveBody=renderHeroSkills(hero,true);else if(liveTab==="Сборки")liveBody=renderActualBuilds(hero);else if(liveTab==="Контрпики")liveBody=renderCounterpicks(hero);else liveBody='<div class="profile-section-title"><h3>Статистика героя</h3><span class="tag">MLBB NEXUS</span></div><div class="profile-stats">'+stats.map(x=>'<div class="profile-stat"><small>'+x[0]+'</small><strong>'+x[1]+'</strong></div>').join("")+'</div>'+renderHeroSkills(hero,true)+'<div class="profile-row"><div class="profile-row-icon"><iconify-icon icon="tabler:chart-bar"></iconify-icon></div><div class="profile-row-body"><strong>Источник данных</strong><p>Все ранги · период 7 дней. Данные обновлены '+new Date(live.updatedAt).toLocaleString("ru-RU")+'.</p></div></div>';document.getElementById("detailContent").innerHTML='<div class="profile-back"><button onclick="goBackDetail()">‹ Назад к тир-листу</button><button class="profile-share" data-url="'+sourceUrl+'" onclick="openTierSource(this.dataset.url)"><iconify-icon icon="tabler:external-link"></iconify-icon></button></div><section class="profile-hero"><div class="profile-art"><span class="profile-art-label">MLBB NEXUS</span><img class="hero-real-image tier-profile-image" src="'+local+'" alt="'+hero.name+'" data-remote="'+(hero.image||"")+'" onerror="tierProfileImageError(this)"></div><div class="profile-info"><h1 class="profile-name">'+hero.name+'</h1><div class="profile-tags"><span class="profile-pill">'+role+'</span><span class="profile-pill profile-tier">'+(hero.tier?hero.tier+' TIER':'НЕТ В ТИР-ЛИСТЕ')+'</span></div></div></section><div class="profile-tabs">'+liveTabs.map(t=>'<button class="'+(t===liveTab?'active':'')+'" data-tab="'+t+'" onclick="setLiveHeroTab(this.dataset.tab)">'+t+'</button>').join("")+'</div>'+liveBody+(liveTab==="Обзор"?renderActualBuilds(hero)+'<button class="demo-action" style="width:100%;margin-top:14px" data-url="'+sourceUrl+'" onclick="openTierSource(this.dataset.url)">Открыть подробности на MLBB Nexus ↗</button><p class="profile-note">Показатели относятся к статистике MLBB Nexus, а не к турнирным матчам.</p>':'');showPage("detail");}function setLiveHeroTab(tab){activeProfileTab=tab;const name=document.querySelector("#detailContent .profile-name")?.textContent;const live=window.UPDATIQ_MLBBNEXUS_TIERS;for(const [key,lane] of Object.entries((live&&live.lanes)||{})){const hero=(lane.heroes||[]).find(h=>h.name===name);if(hero){openTierHero(hero.name,hero.slug);return;}}const catalog=((window.UPDATIQ_HERO_BUILDS&&window.UPDATIQ_HERO_BUILDS.heroes)||[]).find(h=>h.name===name);if(catalog)openTierHero(catalog.name,catalog.slug);}
@@ -262,18 +339,20 @@ function toast(msg){let t=document.getElementById('toast');if(!t){t=document.cre
 
 function checkAppUpdate(){const status=document.getElementById('updateStatus');if(status)status.textContent='Обновления UPDATIQ устанавливаются через RuStore. Открой страницу приложения в магазине и проверь наличие обновления.';}
 const coachData={match:['Подготовка к матчу',[]],tactics:['Тактический план',[]],situations:['Разбор ситуации',[]],progress:['Тренировка и разбор',[]]};
-const coachGoals=['Следил за мини-картой каждые 5–10 секунд.','Не вступал в бой без понимания численного преимущества.','Заранее готовился к Черепахе или Лорду.','После смерти определял, какую ошибку можно исправить.'];
+let coachLastTrigger=null;
+const coachGoals=['Следил за мини-картой каждые 5–10 секунд.','Отслеживал старт и перемещения вражеского лесника.','Не вступал в бой без численного преимущества.','Очищал волну перед ротацией, когда это было безопасно.','Заранее готовился к Черепахе или Лорду.','После смерти определял одну ошибку, которую можно исправить.'];
 function coachRead(key,fallback){try{const v=JSON.parse(localStorage.getItem('updat iq_'+key));return v==null?fallback:v}catch(e){return fallback}}
 function coachWrite(key,value){try{localStorage.setItem('updat iq_'+key,JSON.stringify(value));return true}catch(e){toast('Не удалось сохранить данные на устройстве.');return false}}
 function coachRole(){return document.getElementById('coachRole')?.value||'Лес'}
 function coachRank(){return document.getElementById('coachRank')?.value||'Эпик'}
+function coachRankFocus(){const rank=coachRank();if(['Воин','Элита','Мастер','Грандмастер'].includes(rank))return 'Фокус ранга: стабильный фарм, безопасная позиция и постоянная мини-карта. Не усложняй решение, пока базовые действия не стали привычкой.';if(['Эпик','Легенда'].includes(rank))return 'Фокус ранга: следи за драфтом, контрпиками и таймингами объектов. После каждой волны оцени, можешь ли помочь команде без потери экономики.';return 'Фокус высокого ранга: управляй темпом волн, информацией на карте и временем ключевых умений. Выигранное сражение сразу превращай в объект, башню или безопасный контроль территории.'}
 function coachEsc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function coachSelect(label,id,options){return '<label class="coach-field">'+label+'<select id="'+id+'">'+options.map(o=>'<option value="'+coachEsc(o[0])+'">'+coachEsc(o[1])+'</option>').join('')+'</select></label>'}
 function coachInput(label,id,placeholder){return '<label class="coach-field">'+label+'<input id="'+id+'" maxlength="48" placeholder="'+coachEsc(placeholder||'Необязательно')+'"></label>'}
 function coachResult(title,items,kicker){return '<div class="coach-result"><div class="coach-kicker">'+(kicker||'План действий')+'</div><h4>'+coachEsc(title)+'</h4><ol>'+items.map(x=>'<li>'+coachEsc(x)+'</li>').join('')+'</ol></div>'}
-function closeCoachTool(){const p=document.getElementById('coachToolPanel');if(p)p.innerHTML='';}
+function closeCoachTool(){const p=document.getElementById('coachToolPanel');if(p)p.innerHTML='';const target=coachLastTrigger;coachLastTrigger=null;if(target&&target.isConnected){try{target.focus({preventScroll:true})}catch(e){}}}
 function openCoachTool(k){
- const p=document.getElementById('coachToolPanel');if(!p)return;
+ const p=document.getElementById('coachToolPanel');if(!p)return;coachLastTrigger=document.activeElement;
  let body='';
  if(k==='match'){
   body='<p class="smallnote" style="margin-top:0">Собери короткий план перед загрузкой. Советы зависят от твоей роли и выбранной угрозы.</p><div class="coach-form-grid">'+coachInput('Твой герой','coachOwnHero','Например, Фанни')+coachSelect('Главная угроза','coachThreat',[['engage','Сильное начало боя'],['heal','Много лечения и щитов'],['burst','Высокий мгновенный урон'],['split','Сплит-пуш и давление по линиям'],['control','Много контроля']])+'</div><div class="coach-actions"><button class="primary" onclick="generateCoachMatch()">Составить план</button></div><div id="coachMatchResult"></div>';
@@ -284,7 +363,7 @@ function openCoachTool(k){
  }else if(k==='progress'){
   const saved=coachRead('coach_goals',{}),review=coachRead('coach_reviews',[]);
   const done=coachGoals.filter((_,i)=>saved[i]).length;
-  body='<p class="smallnote" style="margin-top:0">Отмечай выполненные привычки и сохраняй короткий разбор после игры. История останется на этом устройстве.</p><div id="coachGoalsList" style="display:grid;gap:8px">'+coachGoals.map((x,i)=>'<label><input type="checkbox" '+(saved[i]?'checked':'')+' onchange="toggleCoachGoal('+i+',this.checked)"> <span>'+x+'</span></label>').join('')+'</div><p class="smallnote" id="coachProgressCount">'+done+' из '+coachGoals.length+' привычек выполнено</p><div class="coach-goal-progress"><span id="coachProgressBar" style="width:'+Math.round(done/coachGoals.length*100)+'%"></span></div><div class="coach-result"><div class="coach-kicker">После матча</div><h4>Разбор игры</h4><div class="coach-form-grid">'+coachSelect('Результат','coachReviewResult',[['win','Победа'],['loss','Поражение']])+coachSelect('Главная проблема','coachReviewProblem',[['map','Плохо смотрел мини-карту'],['fight','Неудачные командные бои'],['farm','Потерял темп / фарм'],['objective','Пропустил объект'],['position','Плохая позиция'],['none','Явной проблемы не заметил']])+'</div><label class="coach-field" style="margin-top:11px">Что исправить в следующем матче<textarea id="coachReviewNote" maxlength="240" placeholder="Одна конкретная вещь, которую изменишь…"></textarea></label><div class="coach-actions"><button class="primary" onclick="saveCoachReview()">Сохранить разбор</button></div></div><div id="coachReviewHistory">'+renderCoachReviewHistory(review)+'</div>';
+  body='<p class="smallnote" style="margin-top:0">Отмечай игровые привычки и сохраняй короткий разбор после каждого матча. Записи и статистика хранятся только на этом устройстве.</p><div id="coachGoalsList" style="display:grid;gap:8px">'+coachGoals.map((x,i)=>'<label><input type="checkbox" '+(saved[i]?'checked':'')+' onchange="toggleCoachGoal('+i+',this.checked)"> <span>'+x+'</span></label>').join('')+'</div><p class="smallnote" id="coachProgressCount">'+done+' из '+coachGoals.length+' привычек выполнено</p><div class="coach-goal-progress"><span id="coachProgressBar" style="width:'+Math.round(done/coachGoals.length*100)+'%"></span></div><div class="coach-review-stats" id="coachReviewStats">'+renderCoachReviewStats(review)+'</div><div class="coach-result"><div class="coach-kicker">После матча</div><h4>Разбор игры</h4><div class="coach-form-grid">'+coachSelect('Результат','coachReviewResult',[['win','Победа'],['loss','Поражение']])+coachSelect('Главная проблема','coachReviewProblem',[['map','Плохо смотрел мини-карту'],['fight','Неудачные командные бои'],['farm','Потерял темп / фарм'],['objective','Пропустил объект'],['position','Плохая позиция'],['none','Явной проблемы не заметил']])+'</div><label class="coach-field" style="margin-top:11px">Что исправить в следующем матче<textarea id="coachReviewNote" maxlength="240" placeholder="Одна конкретная вещь, которую изменишь…"></textarea></label><div class="coach-actions"><button class="primary" onclick="saveCoachReview()">Сохранить разбор</button></div></div><div id="coachReviewHistory">'+renderCoachReviewHistory(review)+'</div>';
  }else{return}
  p.innerHTML='<div class="coach-modal" role="dialog" aria-modal="true" aria-labelledby="coachModalTitle"><div class="coach-modal-head"><h3 id="coachModalTitle">'+coachEsc(coachData[k][0])+'</h3><button type="button" class="coach-modal-close" onclick="closeCoachTool()">Закрыть ✕</button></div><div class="coach-modal-body">'+body+'</div></div>';
  p.onclick=e=>{if(e.target===p)closeCoachTool()};
@@ -306,7 +385,7 @@ function generateCoachMatch(){
  split:'Против сплит-пуша назначьте игрока для защиты линии, но не отдавайте командный объект без оценки численного преимущества.',
  control:'Против массового контроля не трать все защитные умения одновременно и заходи с разных углов.'
  };
- const items=(rolePlans[role]||rolePlans['Лес']).slice();items.unshift('Герой: '+hero+'. Ранг: '+coachRank()+'. Перед матчем проверь заклинание и актуальную сборку для своего героя.');items.push(threatPlans[threat]);
+ const items=(rolePlans[role]||rolePlans['Лес']).slice();items.unshift('Профиль: '+hero+' · роль '+role+' · ранг '+coachRank()+'. Перед матчем проверь заклинание, актуальную сборку и план первых минут.');items.push(threatPlans[threat]);items.push(coachRankFocus());
  const out=document.getElementById('coachMatchResult');if(out)out.innerHTML=coachResult('Твой план перед матчем',items,'Подготовка · '+role);
 }
 function generateCoachTactics(){
@@ -319,6 +398,7 @@ function generateCoachTactics(){
  if(state==='ahead')items.push('Вы впереди: не отдавай преимущество за случайным убийством. Забирай волну, башню или объект после выигранного эпизода.');
  else if(state==='behind')items.push('Вы отстаёте: избегай разрозненных боёв, защищай безопасные ресурсы и ищи момент, когда враги разделились.');
  else items.push('Игра равная: перед боем проверь численность, ультимейты и расположение ближайших волн.');
+ items.push(coachRankFocus());
  const phaseLabel={early:'Ранняя игра',mid:'Средняя игра',late:'Поздняя игра'}[phase];
  const out=document.getElementById('coachTacticsResult');if(out)out.innerHTML=coachResult(phaseLabel+' · '+role,items,'Тактический план');
 }
@@ -333,17 +413,15 @@ function showCoachScenario(){
  fight:{title:'Начинается бой 3 на 5',safe:'Отступи, пингуй отход и не трать ключевые умения на безнадёжный вход. Ищи возможность прикрыть выход.',risky:'Войти в меньшинстве без ультимейтов и пути отхода.',why:'Не нужно превращать проигрываемый бой в командный вайп. Сохрани ресурсы для следующей защиты.'}
  }[k]||{title:'Ситуация не найдена',safe:'Выбери ситуацию из списка и попробуй ещё раз.',risky:'Не входи в бой без информации о врагах и поддержки команды.',why:'Для этой ситуации пока нет подготовленного разбора.'};
  const roleTip={'Лес':'Как лесник, следи за таймингом Retribution и не начинай объект без контроля подходов.','Мид':'Как мид, сначала оцени волну и возможность помочь союзнику без потери всей линии.','Золото':'Как стрелок, держи безопасную дистанцию и не входи первым.','Опыт':'Как игрок линии опыта, не уходи слишком далеко от команды перед крупным объектом.','Роум':'Как роум, проверяй обзор с союзником и не отдавай жизнь за одиночный куст.'}[role]||'Смотри на мини-карту и оцени численность перед входом.';
- const out=document.getElementById('coachScenarioAnswer');if(out)out.innerHTML='<div class="coach-result"><div class="coach-kicker">Разбор решения · '+coachEsc(role)+'</div><h4>'+coachEsc(data.title||'Разбор ситуации')+'</h4><strong>Лучший базовый ход</strong><p>'+coachEsc(data.safe||'Оцени карту, численность команд и доступные умения перед решением.')+'</p><strong>Чего избегать</strong><p>'+coachEsc(data.risky||'Не начинай бой без информации и поддержки.')+'</p><strong>Почему</strong><p>'+coachEsc(data.why||'Безопасное решение зависит от положения союзников и врагов.')+'</p><p class="smallnote">'+coachEsc(roleTip)+'</p></div>';
+ const out=document.getElementById('coachScenarioAnswer');if(out)out.innerHTML='<div class="coach-result"><div class="coach-kicker">Разбор решения · '+coachEsc(role)+'</div><h4>'+coachEsc(data.title||'Разбор ситуации')+'</h4><strong>Лучший базовый ход</strong><p>'+coachEsc(data.safe||'Оцени карту, численность команд и доступные умения перед решением.')+'</p><strong>Чего избегать</strong><p>'+coachEsc(data.risky||'Не начинай бой без информации и поддержки.')+'</p><strong>Почему</strong><p>'+coachEsc(data.why||'Безопасное решение зависит от положения союзников и врагов.')+'</p><p class="smallnote">'+coachEsc(roleTip)+'</p><p class="smallnote">'+coachEsc(coachRankFocus())+'</p></div>';
 }
 function toggleCoachGoal(i,on){const saved=coachRead('coach_goals',{});saved[i]=!!on;coachWrite('coach_goals',saved);const done=coachGoals.filter((_,j)=>saved[j]).length;const count=document.getElementById('coachProgressCount'),bar=document.getElementById('coachProgressBar');if(count)count.textContent=done+' из '+coachGoals.length+' привычек выполнено';if(bar)bar.style.width=Math.round(done/coachGoals.length*100)+'%';}
+function renderCoachReviewStats(reviews){const total=reviews.length,wins=reviews.filter(r=>r.result==='win').length,losses=total-wins,rate=total?Math.round(wins/total*100):0;return '<div class="coach-review-stat"><strong>'+total+'</strong><span>Матчей записано</span></div><div class="coach-review-stat"><strong>'+wins+'–'+losses+'</strong><span>Победы · поражения</span></div><div class="coach-review-stat"><strong>'+rate+'%</strong><span>Доля побед в записях</span></div>'}
 function renderCoachReviewHistory(reviews){if(!reviews.length)return '<p class="smallnote">Пока нет сохранённых разборов. После матча запиши одну конкретную ошибку или удачное решение.</p>';return '<div class="coach-result"><div class="coach-kicker">Последние матчи</div>'+reviews.slice(0,5).map(r=>'<div style="padding:10px 0;border-bottom:1px solid #263954"><div style="display:flex;justify-content:space-between;gap:8px"><strong>'+coachEsc(r.result==='win'?'Победа':'Поражение')+'</strong><small class="smallnote" style="margin:0">'+coachEsc(r.date)+'</small></div><p>'+coachEsc(r.problemLabel)+'</p>'+(r.note?'<p>'+coachEsc(r.note)+'</p>':'')+'</div>').join('')+'</div>'}
-function saveCoachReview(){const result=document.getElementById('coachReviewResult')?.value||'loss',problem=document.getElementById('coachReviewProblem')?.value||'map',note=(document.getElementById('coachReviewNote')?.value||'').trim();const labels={map:'Мини-карта',fight:'Командные бои',farm:'Фарм и темп',objective:'Объекты',position:'Позиционирование',none:'Явной проблемы не заметил'};const reviews=coachRead('coach_reviews',[]);reviews.unshift({result,problem,problemLabel:labels[problem]||problem,note,date:new Date().toLocaleDateString('ru-RU')});coachWrite('coach_reviews',reviews.slice(0,20));const h=document.getElementById('coachReviewHistory');if(h)h.innerHTML=renderCoachReviewHistory(reviews.slice(0,20));const n=document.getElementById('coachReviewNote');if(n)n.value='';toast('Разбор матча сохранён на устройстве.');}
+function saveCoachReview(){const result=document.getElementById('coachReviewResult')?.value||'loss',problem=document.getElementById('coachReviewProblem')?.value||'map',note=(document.getElementById('coachReviewNote')?.value||'').trim();const labels={map:'Мини-карта',fight:'Командные бои',farm:'Фарм и темп',objective:'Объекты',position:'Позиционирование',none:'Явной проблемы не заметил'};const reviews=coachRead('coach_reviews',[]);reviews.unshift({result,problem,problemLabel:labels[problem]||problem,note,date:new Date().toLocaleDateString('ru-RU')});coachWrite('coach_reviews',reviews.slice(0,20));const h=document.getElementById('coachReviewHistory');if(h)h.innerHTML=renderCoachReviewHistory(reviews.slice(0,20));const stats=document.getElementById('coachReviewStats');if(stats)stats.innerHTML=renderCoachReviewStats(reviews.slice(0,20));const n=document.getElementById('coachReviewNote');if(n)n.value='';toast('Разбор матча сохранён на устройстве.');}
 function saveCoachProfile(){const p={rank:document.getElementById('coachRank')?.value||'Эпик',role:document.getElementById('coachRole')?.value||'Лес'};coachWrite('coach_profile',p)}
 function loadCoachProfile(){try{const p=JSON.parse(localStorage.getItem('updat iq_coach_profile')||'null');if(!p)return;const r=document.getElementById('coachRank'),l=document.getElementById('coachRole');if(r&&[...r.options].some(o=>o.value===p.rank||o.text===p.rank))r.value=p.rank;if(l&&[...l.options].some(o=>o.value===p.role||o.text===p.role))l.value=p.role}catch(e){}}
-document.addEventListener('keydown',function(e){if(e.key==='Escape'){const p=document.getElementById('coachToolPanel');if(p&&!p.matches(':empty'))closeCoachTool();}});
-function showCoachScenario(){const k=document.getElementById('coachScenario').value,a={missing:'Не заходи в кусты один. Отступи в безопасную позицию, проверь мини-карту и предупреди команду.',behind:'Собирай безопасные ресурсы, защищай волны и избегай боёв без преимущества по позиции.',lord:'Соберитесь заранее, проверьте видимость врагов и подготовьте контроль. Не идите к объекту по одному.',tower:'Оцени численное преимущество, доступность ультимейтов и путь отхода. Не присоединяйся автоматически.'},t={missing:'Враги пропали с карты',behind:'Отставание по золоту',lord:'Подготовка к Лорду',tower:'Союзник атакует без поддержки'};document.getElementById('coachScenarioAnswer').innerHTML='<h4>'+t[k]+'</h4><p>'+a[k]+'</p><small class="smallnote">Учитывай составы и состояние матча.</small>';}
-function saveCoachProfile(){const p={rank:document.getElementById('coachRank')?.value||'Эпик',role:document.getElementById('coachRole')?.value||'Лес'};try{localStorage.setItem('updat iq_coach_profile',JSON.stringify(p))}catch(e){}}function loadCoachProfile(){try{const p=JSON.parse(localStorage.getItem('updat iq_coach_profile')||'null');if(!p)return;const r=document.getElementById('coachRank'),l=document.getElementById('coachRole');if(r&&[...r.options].some(o=>o.value===p.rank||o.text===p.rank))r.value=p.rank;if(l&&[...l.options].some(o=>o.value===p.role||o.text===p.role))l.value=p.role}catch(e){}}function toggleCoachCheck(i,on){let c=[];try{c=JSON.parse(localStorage.getItem('updat iq_coach_checks')||'[]')}catch(e){}c=on?[...new Set([...c,i])]:c.filter(x=>x!==i);try{localStorage.setItem('updat iq_coach_checks',JSON.stringify(c))}catch(e){}const el=document.getElementById('coachProgressCount');if(el)el.textContent=c.length+' из '+coachData.progress[1].length+' целей выполнено';}
-
+document.addEventListener('keydown',function(e){const panel=document.getElementById('coachToolPanel');if(!panel||panel.matches(':empty'))return;if(e.key==='Escape'){e.preventDefault();closeCoachTool();return}if(e.key==='Tab'){const nodes=Array.from(panel.querySelectorAll('button:not(:disabled),input:not(:disabled),select:not(:disabled),textarea:not(:disabled),[href],[tabindex]:not([tabindex="-1"])')).filter(el=>el.offsetParent!==null);if(!nodes.length)return;const first=nodes[0],last=nodes[nodes.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}});
 /* Replace Android's bright native select popup with UPDATIQ-styled dialogs. */
 (function(){
  let activeSelect=null,backdrop=null,previousFocus=null;
