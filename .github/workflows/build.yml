@@ -336,5 +336,9 @@ jobs:
             gh release upload latest UPDATIQ.apk --clobber
             gh release edit latest --title "UPDATIQ Latest" --notes "Автоматическая актуальная сборка UPDATIQ для встроенного обновления." --latest
           else
-            gh release create latest UPDATIQ.apk --title "UPDATIQ Latest" --notes "Автоматическая актуальная сборка UPDATIQ для встроенного обновления."
+            gh release create latest UPDATIQ.apk --title "UPDATIQ Latest" --notes "Автоматическая актуальная сборка UPDATIQ и набор актуальных игровых данных."
           fi
+          # Publish datasets separately so installed app versions can refresh stats.
+          for data_file in mlbbnexus-tiers.json mlbb-tournament-tiers.json mlbb-hero-builds.json mlbb-hero-counters.json; do
+            if [ -s "$data_file" ]; then gh release upload latest "$data_file" --clobber; fi
+          done
