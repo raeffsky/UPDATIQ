@@ -587,7 +587,7 @@ async function refreshLiveGameData(){
    if(!applyLiveDataset(name,data))continue;
    cache[name]={updatedAt:asset.updated_at,data};changed++;
   }
-  if(changed){localStorage.setItem(UPDATIQ_LIVE_DATA_KEY,JSON.stringify(cache));try{renderTiers();renderBalance();renderMetaExtras();initDraftIntelligence();captureMetaSnapshot(false)}catch(e){console.warn('Live data redraw failed',e)}}
+  if(changed){localStorage.setItem(UPDATIQ_LIVE_DATA_KEY,JSON.stringify(cache));try{renderTiers();renderBalance();renderMetaExtras();initDraftIntelligence();captureMetaSnapshot(false);renderHomeDashboard()}catch(e){console.warn('Live data redraw failed',e)}}
   if(status)status.textContent='Данные обновлены · '+new Date().toLocaleString('ru-RU')+' · '+(changed?'получены новые наборы':'актуальная версия');
   localStorage.setItem('updatiq_live_data_last_check',String(Date.now()));
   return {ok:true,changed};
@@ -601,6 +601,6 @@ async function refreshLiveGameData(){
 try{applyCachedLiveData()}catch(e){console.warn('UPDATIQ cached data unavailable',e)}
 
 for(const [label,fn] of [['профиль тренера',loadCoachProfile],['новости',renderNews],['официальные новости',loadOfficialNews],['герои',renderHeroes],['баланс',renderBalance],['тир-лист',renderTiers],['дополнительная мета',renderMetaExtras]]){try{fn()}catch(e){console.error('UPDATIQ init error · '+label,e);if(label==='тир-лист'){const stamp=document.getElementById('tierDataStamp');if(stamp)stamp.textContent='Не удалось отобразить мету. Перезапусти приложение или сообщи об ошибке.'}}}
-try{initDraftIntelligence();captureMetaSnapshot(false)}catch(e){console.error('UPDATIQ meta intelligence init error',e)};try{refreshLiveGameData();setInterval(refreshLiveGameData,6*60*60*1000)}catch(e){console.error('UPDATIQ live data init error',e)};try{refreshOfficialNews()}catch(e){console.error('UPDATIQ official news refresh error',e)};try{refreshAdminNews(true);setInterval(()=>refreshAdminNews(true),30000)}catch(e){console.error('UPDATIQ admin feed refresh error',e)}
+try{initDraftIntelligence();captureMetaSnapshot(false)}catch(e){console.error('UPDATIQ meta intelligence init error',e)};try{renderHomeDashboard()}catch(e){console.warn('UPDATIQ home dashboard init',e)};try{refreshLiveGameData();setInterval(refreshLiveGameData,6*60*60*1000)}catch(e){console.error('UPDATIQ live data init error',e)};try{refreshOfficialNews()}catch(e){console.error('UPDATIQ official news refresh error',e)};try{refreshAdminNews(true);setInterval(()=>refreshAdminNews(true),30000)}catch(e){console.error('UPDATIQ admin feed refresh error',e)}
 (function(){const splash=document.getElementById("startup-splash");if(!splash)return;const hide=()=>splash.classList.add("splash-done");setTimeout(hide,1300);setTimeout(hide,5000)})();
 </script></body></html>
