@@ -343,14 +343,17 @@ jobs:
           set -euo pipefail
           echo "APK files produced by Gradle:"
           find app/build/outputs -type f -name '*.apk' -print
-          APK_PATH="$(find app/build/outputs -type f -name '*.apk' | head -n 1)"
-          if [ -z "$APK_PATH" ]; then
-            echo "::error::Gradle completed but no APK was found under app/build/outputs."
-            exit 1
+          APK_PATH="app/build/outputs/apk/release/app-release.apk"
+          if [ ! -s "$APK_PATH" ]; then
+            APK_PATH="$(find app/build/outputs -type f -name '*.apk' ! -name '*aligned*' ! -name '*unsigned*' | head -n 1)"
+            if [ -z "$APK_PATH" ]; then
+              echo "::error::No signed APK was found under app/build/outputs."
+              exit 1
+            fi
+            mkdir -p app/build/outputs/apk/release
+            cp "$APK_PATH" app/build/outputs/apk/release/app-release.apk
           fi
-          mkdir -p app/build/outputs/apk/release
-          cp "$APK_PATH" app/build/outputs/apk/release/app-release.apk
-          echo "Normalized APK: $APK_PATH"
+          echo "Verified release APK path: $APK_PATH"
           ls -lh app/build/outputs/apk/release/app-release.apk
 
       - name: Upload signed APK
