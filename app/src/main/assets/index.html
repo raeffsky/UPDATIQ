@@ -505,6 +505,49 @@ document.addEventListener('keydown',function(e){const panel=document.getElementB
  });
 })();
 
+
+/* Live data channel: cached datasets remain available offline; release assets refresh independently of APK builds. */
+const UPDATIQ_LIVE_DATA_KEY='updatiq_live_data_cache_v1';
+const UPDATIQ_LIVE_DATA_FILES={
+ 'mlbbnexus-tiers.json':d=>{if(!d||!d.lanes||!d.lanes.all||!Array.isArray(d.lanes.all.heroes)||d.lanes.all.heroes.length<20)throw Error('ranked schema');window.UPDATIQ_MLBBNEXUS_TIERS=d;},
+ 'mlbb-tournament-tiers.json':d=>{if(!d||!Array.isArray(d.heroes)||d.heroes.length<10)throw Error('tournament schema');window.UPDATIQ_MLBB_TOURNAMENT=d;},
+ 'mlbb-hero-builds.json':d=>{if(!d||!Array.isArray(d.heroes)||d.heroes.length<20)throw Error('build schema');window.UPDATIQ_HERO_BUILDS=d;},
+ 'mlbb-hero-counters.json':d=>{if(!d||!d.heroes||Object.keys(d.heroes).length<100)throw Error('counter schema');window.UPDATIQ_HERO_COUNTERS=d;}
+};
+function applyLiveDataset(name,data){const validate=UPDATIQ_LIVE_DATA_FILES[name];if(!validate)return false;try{validate(data);return true}catch(e){console.warn('UPDATIQ rejected live dataset',name,e);return false}}
+function readLiveDataCache(){try{const v=JSON.parse(localStorage.getItem(UPDATIQ_LIVE_DATA_KEY)||'{}');return v&&typeof v==='object'?v:{}}catch(e){return {}}}
+function applyCachedLiveData(){const cache=readLiveDataCache();let count=0;for(const name of Object.keys(UPDATIQ_LIVE_DATA_FILES)){if(cache[name]&&applyLiveDataset(name,cache[name].data))count++}return count}
+async function refreshLiveGameData(){
+ const status=document.getElementById('tierDataStamp');
+ const cache=readLiveDataCache();
+ try{
+  const metaResponse=await fetch('https://api.github.com/repos/raeffsky/UPDATIQ/releases/tags/latest',{headers:{Accept:'application/vnd.github+json'},cache:'no-store'});
+  if(!metaResponse.ok)throw Error('release metadata '+metaResponse.status);
+  const release=await metaResponse.json();
+  const assets=Array.isArray(release.assets)?release.assets:[];
+  let changed=0;
+  for(const name of Object.keys(UPDATIQ_LIVE_DATA_FILES)){
+   const asset=assets.find(a=>a.name===name);if(!asset||!asset.url)continue;
+   const cached=cache[name];if(cached&&cached.updatedAt===asset.updated_at&&applyLiveDataset(name,cached.data))continue;
+   const response=await fetch(asset.url,{headers:{Accept:'application/octet-stream'},cache:'no-store'});
+   if(!response.ok)throw Error(name+' download '+response.status);
+   const data=await response.json();
+   if(!applyLiveDataset(name,data))continue;
+   cache[name]={updatedAt:asset.updated_at,data};changed++;
+  }
+  if(changed){localStorage.setItem(UPDATIQ_LIVE_DATA_KEY,JSON.stringify(cache));try{renderTiers();renderBalance();renderMetaExtras();initDraftIntelligence();captureMetaSnapshot(false)}catch(e){console.warn('Live data redraw failed',e)}}
+  if(status)status.textContent='Данные обновлены · '+new Date().toLocaleString('ru-RU')+' · '+(changed?'получены новые наборы':'актуальная версия');
+  localStorage.setItem('updatiq_live_data_last_check',String(Date.now()));
+  return {ok:true,changed};
+ }catch(error){
+  const restored=applyCachedLiveData();
+  if(status)status.textContent=restored?'Офлайн-режим · используются сохранённые данные':'Не удалось обновить данные · используется встроенная версия';
+  console.warn('UPDATIQ live data refresh:',error);
+  return {ok:false,error:String(error),restored};
+ }
+}
+try{applyCachedLiveData()}catch(e){console.warn('UPDATIQ cached data unavailable',e)}
+
 for(const [label,fn] of [['профиль тренера',loadCoachProfile],['новости',renderNews],['официальные новости',loadOfficialNews],['герои',renderHeroes],['баланс',renderBalance],['тир-лист',renderTiers],['дополнительная мета',renderMetaExtras]]){try{fn()}catch(e){console.error('UPDATIQ init error · '+label,e);if(label==='тир-лист'){const stamp=document.getElementById('tierDataStamp');if(stamp)stamp.textContent='Не удалось отобразить мету. Перезапусти приложение или сообщи об ошибке.'}}}
 try{initDraftIntelligence();captureMetaSnapshot(false)}catch(e){console.error('UPDATIQ meta intelligence init error',e)};try{refreshOfficialNews()}catch(e){console.error('UPDATIQ official news refresh error',e)};try{refreshAdminNews(true);setInterval(()=>refreshAdminNews(true),30000)}catch(e){console.error('UPDATIQ admin feed refresh error',e)}
 (function(){const splash=document.getElementById("startup-splash");if(!splash)return;const hide=()=>splash.classList.add("splash-done");setTimeout(hide,1300);setTimeout(hide,5000)})();
