@@ -253,17 +253,18 @@ function renderTierGroups(heroes,mode){
  }
  return html||'<div class="tier-empty">По этому запросу герои не найдены. Измени поиск или выбери другую роль.</div>';
 }
+function tierHeroWord(count){const n=Math.abs(count)%100,last=n%10;if(n>10&&n<20)return "героев";if(last===1)return "герой";if(last>=2&&last<=4)return "героя";return "героев"}
 function renderTierSummary(heroes){
  const order=["S","A","B","C","D"];
  const chips=order.map(t=>'<span><b class="tierlabel '+t.toLowerCase()+'" style="width:18px;min-width:18px;height:18px;border-radius:5px;font-size:9px">'+t+'</b><strong>'+heroes.filter(h=>h._displayTier===t).length+'</strong></span>').join("");
- return chips+'<span class="tier-summary-total">'+heroes.length+' героев</span>';
+ return chips+'<span class="tier-summary-total">'+heroes.length+' '+tierHeroWord(heroes.length)+'</span>';
 }
 function updateTierStamp(live,extra){
  const stamp=document.getElementById("tierDataStamp");if(!stamp)return;
  const raw=live&&live.updatedAt;const date=raw?new Date(raw):null;const valid=date&&Number.isFinite(date.getTime());
  const stale=valid&&(Date.now()-date.getTime()>36*60*60*1000);
  stamp.classList.toggle("tier-stale",!!stale);
- stamp.textContent="Источник: MLBB Nexus · все ранги · 7 дней · "+(extra?extra+" · ":"")+(valid?"обновлено "+date.toLocaleString("ru-RU"):"время обновления неизвестно")+(stale?" · данные старше 36 часов":"");
+ stamp.textContent="Источник: "+(extra||"MLBB Nexus · все ранги · 7 дней")+" · "+(valid?"обновлено "+date.toLocaleString("ru-RU"):"время обновления неизвестно")+(stale?" · данные старше 36 часов":"");
 }
 function clearTierSearch(){const input=document.getElementById("tierHeroSearch");if(input)input.value="";renderTiers();if(input)input.focus({preventScroll:true})}
 function renderTiers(){
@@ -327,7 +328,8 @@ function renderTiers(){
  rows.innerHTML=renderTierGroups(filtered,"stats");
  if(hint)hint.textContent=tierMetric==="winRate"
   ?"Тиры S–D взяты из рейтинга источника. Герои отсортированы по винрейту; показатели относятся ко всем рангам за 7 дней."
-  :"Ранжирование по "+metricLabel.toLowerCase()+". Тиры показывают относительное положение героя внутри выбранной роли, а не гарантируют победу.";
+  :tierMetric==="pickRate"?"Пикрейт показывает, как часто героя выбирают. Высокое значение означает популярность, но не обязательно силу героя."
+  :"Банрейт показывает, как часто героя запрещают. Высокое значение отражает приоритет в драфте, но не гарантирует высокий винрейт.";
  updateTierStamp(live,"MLBB Nexus · "+(live.rank||"все ранги")+" · "+(live.period==="7d"?"7 дней":live.period||"7 дней"));
 }
 function selectTierMode(btn,mode){tierMode=mode;btn.parentElement.querySelectorAll("button").forEach(x=>x.classList.toggle("active",x===btn));renderTiers()}function selectTierMetric(btn,metric){tierMetric=metric;btn.parentElement.querySelectorAll("button").forEach(x=>x.classList.toggle("active",x===btn));renderTiers()}function selectRole(btn,role){tierRole=role;btn.parentElement.querySelectorAll("button").forEach(x=>x.classList.toggle("active",x===btn));renderTiers()}
