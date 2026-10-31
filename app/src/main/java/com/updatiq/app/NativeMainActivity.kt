@@ -215,7 +215,7 @@ private fun FeatureRow(title: String, subtitle: String, icon: ImageVector, tint:
 
 @Composable
 private fun PageIntro(kicker: String, title: String, subtitle: String, icon: ImageVector) {
-    ScreenHeader(kicker, Icons.Filled.Search) {}
+    ScreenHeader(kicker)
     Column(Modifier.padding(horizontal = 22.dp)) {
         Icon(icon, null, tint = Accent, modifier = Modifier.size(28.dp))
         Spacer(Modifier.height(10.dp))
