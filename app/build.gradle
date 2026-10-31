@@ -1,6 +1,8 @@
-plugins { id 'com.android.application' }
-
-dependencies { implementation 'androidx.core:core:1.13.1' }
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'org.jetbrains.kotlin.plugin.compose'
+}
 
 android {
     namespace 'com.updatiq.app'
@@ -10,23 +12,39 @@ android {
         applicationId 'com.updatiq.app'
         minSdk 23
         targetSdk 35
-        versionCode (System.getenv('GITHUB_RUN_NUMBER')?.toInteger() ?: 1)
-        versionName "0.1.${System.getenv('GITHUB_RUN_NUMBER') ?: '0'}"
+        versionCode 200
+        versionName "2.0.0"
     }
 
-    signingConfigs {
-        release {
-            storeFile file(System.getenv('UPDATIQ_KEYSTORE_FILE') ?: 'release-keystore.jks')
-            storePassword System.getenv('UPDATIQ_KEYSTORE_PASSWORD') ?: ''
-            keyAlias System.getenv('UPDATIQ_KEY_ALIAS') ?: ''
-            keyPassword System.getenv('UPDATIQ_KEY_PASSWORD') ?: ''
-        }
-    }
+    buildFeatures { compose true }
 
     buildTypes {
-        release {
-            signingConfig signingConfigs.release
-            minifyEnabled false
-        }
+        debug { applicationIdSuffix ".debug" }
+        release { minifyEnabled false }
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions { jvmTarget = '17' }
+}
+
+dependencies {
+    implementation platform('androidx.compose:compose-bom:2024.12.01')
+    implementation 'androidx.activity:activity-compose:1.10.0'
+    implementation 'androidx.compose.ui:ui'
+    implementation 'androidx.compose.ui:ui-tooling-preview'
+    implementation 'androidx.compose.material3:material3'
+    implementation 'androidx.compose.material:material-icons-extended'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.8.7'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.8.7'
+    implementation 'androidx.navigation:navigation-compose:2.8.5'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0'
+    implementation 'androidx.room:room-runtime:2.6.1'
+    implementation 'androidx.room:room-ktx:2.6.1'
+    implementation 'androidx.datastore:datastore-preferences:1.1.1'
+    implementation 'androidx.work:work-runtime-ktx:2.10.0'
+    implementation 'com.squareup.retrofit2:retrofit:2.11.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.11.0'
 }
