@@ -2,7 +2,7 @@
 name: Build UPDATIQ APK
 on:
   push:
-    branches: [main, development]
+    branches: [main, development, kotlin-2.0]
     paths-ignore:
       - 'app/src/main/assets/community-news.js'
   workflow_dispatch:
