@@ -136,8 +136,7 @@ private fun OverviewScreen(onOpen: (AppTab) -> Unit, onSearch: () -> Unit) {
                     Text("TACTICAL INTELLIGENCE / 02", color = Accent, fontSize = 9.sp, fontWeight = FontWeight.Bold, letterSpacing = 1.5.sp)
                 }
                 Spacer(Modifier.height(10.dp))
-                Text("Побеждай
-с пониманием.", color = Ink, fontSize = 34.sp, lineHeight = 38.sp, fontWeight = FontWeight.Black)
+                Text("Побеждай\nс пониманием.", color = Ink, fontSize = 34.sp, lineHeight = 38.sp, fontWeight = FontWeight.Black)
                 Spacer(Modifier.height(7.dp))
                 Text("Мета, пики и аналитика MLBB без лишнего шума.", color = SecondaryInk, fontSize = 13.sp)
             }
